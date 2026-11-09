@@ -359,6 +359,27 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isRtl, handlePrev, handleNext]);
 
+  // Écran toujours allumé pendant la lecture (Screen Wake Lock) : repris quand on revient sur
+  // l'app, relâché en quittant le lecteur. Navigateurs sans support : sans effet.
+  useEffect(() => {
+    const nav = navigator as any;
+    if (!nav.wakeLock?.request) return;
+    let lock: any = null;
+    let alive = true;
+    const acquire = async () => {
+      if (!alive || document.visibilityState !== 'visible' || (lock && !lock.released)) return;
+      try { lock = await nav.wakeLock.request('screen'); } catch { /* refusé (batterie faible…) */ }
+    };
+    const onVisible = () => { if (document.visibilityState === 'visible') acquire(); };
+    acquire();
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      alive = false;
+      document.removeEventListener('visibilitychange', onVisible);
+      lock?.release?.().catch(() => {});
+    };
+  }, []);
+
   // Balayage du doigt pour changer de page, comme dans un mushaf : glisser vers la droite = page
   // suivante, vers la gauche = page précédente. Un geste surtout vertical reste un défilement.
   const swipeStart = useRef<{ x: number; y: number; t: number } | null>(null);
