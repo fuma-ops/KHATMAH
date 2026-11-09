@@ -82,7 +82,7 @@ export const TRANSLATIONS: Record<AppLanguage, Translations> = {
     navHistory: "سجل القراءة",
     navSettings: "الإعدادات",
     selectPlanTitle: "اختر خطة الختمة المناسبة لك",
-    selectPlanSubtitle: "٦ خطط متوازنة ومضبوطة لإنهاء القرآن كاملاً في المدة التي تختارها",
+    selectPlanSubtitle: "6 خطط متوازنة ومضبوطة لإنهاء القرآن كاملاً في المدة التي تختارها",
     planDuration: "المدة",
     planDailyPages: "صفحات رقمية يومياً",
     planDaysUnit: "أيام",

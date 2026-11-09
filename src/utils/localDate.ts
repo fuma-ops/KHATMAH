@@ -8,3 +8,8 @@ export function localDateISO(d: Date = new Date()): string {
 }
 
 export const todayISO = (): string => localDateISO(new Date());
+
+// Heure locale « HH:MM » en chiffres 0-9, quelle que soit la langue du téléphone.
+export function localTimeHM(d: Date = new Date()): string {
+  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+}

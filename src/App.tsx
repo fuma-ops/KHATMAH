@@ -44,7 +44,7 @@ import { KhatmaState, getTodaysAssignedTarget, PastKhatmaRecord } from './servic
 import { getPageSurahRange, getPlanScheduleBreakdown } from './services/khatmaScheduleHelper';
 import { ReadingSettings } from './types/quran';
 import { AppLanguage } from './utils/translations';
-import { todayISO } from './utils/localDate';
+import { todayISO, localTimeHM } from './utils/localDate';
 
 export default function App() {
   const [khatma, setKhatma] = useState<KhatmaState>(loadKhatmaState);
@@ -192,7 +192,7 @@ export default function App() {
     const exists = khatma.completedPages.includes(key);
     const todayStr = todayISO();
     const now = new Date();
-    const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const timeStr = localTimeHM(now);
 
     let newCompleted: string[];
     let newDailyCount = khatma.dailyLog[todayStr] || 0;
@@ -276,7 +276,7 @@ export default function App() {
         planId: khatma.planId,
         startedAt: khatma.startDateTime || now.toISOString(),
         startDate: khatma.startDate || todayStr,
-        startTime: khatma.startDateTime ? new Date(khatma.startDateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '10:00',
+        startTime: khatma.startDateTime ? localTimeHM(new Date(khatma.startDateTime)) : '10:00',
         completedAt: now.toISOString(),
         completedDate: todayStr,
         completedTime: timeStr,
@@ -299,7 +299,9 @@ export default function App() {
         lastReadDate: todayStr
       }));
 
-      setIsDuaOpen(true);
+      // Le dua de fin de Khatma n'est jamais ouvert automatiquement : retour à l'accueil, où un
+      // bandeau « Khatma terminée » propose le bouton pour le lire quand l'utilisateur le souhaite.
+      setCurrentTab('home');
       return;
     }
 
@@ -680,6 +682,7 @@ export default function App() {
               onOpenSettings={() => setIsSettingsModalOpen(true)}
               onUpdateLanguage={setLanguage}
               onOpenScheduleModal={() => setIsScheduleModalOpen(true)}
+              onOpenDua={() => setIsDuaOpen(true)}
             />
           )}
 

@@ -100,11 +100,8 @@ export function saveReadingSettings(settings: ReadingSettings): void {
   }
 }
 
+// Chiffres « normaux » (0-9) partout dans l'app, y compris en arabe et dans les numéros de
+// versets (choix du propriétaire, 09/11/2026). Le nom est gardé pour ne pas toucher aux appels.
 export function toArabicNumerals(num: number): string {
-  const arabicDigits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
-  return num
-    .toString()
-    .split('')
-    .map(d => (d >= '0' && d <= '9' ? arabicDigits[parseInt(d, 10)] : d))
-    .join('');
+  return String(num);
 }

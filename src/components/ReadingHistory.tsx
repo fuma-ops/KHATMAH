@@ -58,13 +58,13 @@ export const ReadingHistory: React.FC<ReadingHistoryProps> = ({
     }
     try {
       const dt = new Date(khatma.startDateTime);
-      const dateStr = dt.toLocaleDateString(language === 'ar' ? 'ar-SA' : language === 'fr' ? 'fr-FR' : 'en-US', {
+      const dateStr = dt.toLocaleDateString(language === 'ar' ? 'ar-MA-u-nu-latn' : language === 'fr' ? 'fr-FR' : 'en-US', {
         weekday: 'long',
         year: 'numeric',
         month: 'long',
         day: 'numeric'
       });
-      const timeStr = dt.toLocaleTimeString(language === 'ar' ? 'ar-SA' : language === 'fr' ? 'fr-FR' : 'en-US', {
+      const timeStr = dt.toLocaleTimeString(language === 'ar' ? 'ar-MA-u-nu-latn' : language === 'fr' ? 'fr-FR' : 'en-US', {
         hour: '2-digit',
         minute: '2-digit'
       });
@@ -344,7 +344,7 @@ export const ReadingHistory: React.FC<ReadingHistoryProps> = ({
               const dayPagesCount = daySessions.length;
 
               const dateObj = new Date(dateStr);
-              const formattedDay = dateObj.toLocaleDateString(language === 'ar' ? 'ar-SA' : language === 'fr' ? 'fr-FR' : 'en-US', {
+              const formattedDay = dateObj.toLocaleDateString(language === 'ar' ? 'ar-MA-u-nu-latn' : language === 'fr' ? 'fr-FR' : 'en-US', {
                 weekday: 'long',
                 day: 'numeric',
                 month: 'long',
@@ -434,7 +434,7 @@ export const ReadingHistory: React.FC<ReadingHistoryProps> = ({
                       {language === 'ar' ? surahInfo.ar : surahInfo.fr}
                     </div>
                     <div className="text-[10px] text-stone-400 mt-0.5 font-mono">
-                      {new Date(bm.timestamp).toLocaleDateString(language === 'ar' ? 'ar-SA' : language === 'fr' ? 'fr-FR' : 'en-US')}
+                      {new Date(bm.timestamp).toLocaleDateString(language === 'ar' ? 'ar-MA-u-nu-latn' : language === 'fr' ? 'fr-FR' : 'en-US')}
                     </div>
                   </button>
 

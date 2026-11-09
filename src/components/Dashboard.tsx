@@ -25,6 +25,7 @@ import plannerQuillImg from '../assets/images/planner_quill_card_1794223680272.w
 import booksBookmarkImg from '../assets/images/books_bookmark_card_1794223697975.webp';
 import lanternStudyImg from '../assets/images/lantern_study_card_1794223715621.webp';
 import { PWAInstallButton } from './PWAInstallButton';
+import { todayISO } from '../utils/localDate';
 
 interface DashboardProps {
   khatma: KhatmaState;
@@ -35,6 +36,7 @@ interface DashboardProps {
   onOpenSettings: () => void;
   onUpdateLanguage: (lang: AppLanguage) => void;
   onOpenScheduleModal: () => void;
+  onOpenDua: () => void;
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({
@@ -45,7 +47,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
   onNavigateTab,
   onOpenSettings,
   onUpdateLanguage,
-  onOpenScheduleModal
+  onOpenScheduleModal,
+  onOpenDua
 }) => {
   const isRtl = language === 'ar';
   const [isLangOpen, setIsLangOpen] = useState(false);
@@ -348,6 +351,30 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </div>
         </div>
 
+        {/* Khatma terminée aujourd'hui : bandeau avec le dua, à ouvrir par l'utilisateur. */}
+        {khatma.pastKhatmas?.[0]?.completedDate === todayISO() && (
+          <div className="mx-auto w-full max-w-3xl mt-4 px-4">
+            <div className="rounded-3xl bg-gradient-to-br from-[#064e3b] to-[#022c22] text-white p-5 shadow-lg text-center">
+              <div className="text-lg font-bold">
+                {language === 'ar'
+                  ? `🎉 مبارك! أتممت الختمة رقم ${khatma.pastKhatmas[0].khatmaNumber}`
+                  : language === 'en'
+                  ? `🎉 Congratulations! Khatma no. ${khatma.pastKhatmas[0].khatmaNumber} completed`
+                  : `🎉 Mabrouk ! Khatma n° ${khatma.pastKhatmas[0].khatmaNumber} terminée`}
+              </div>
+              <div className="text-xs text-amber-100/90 mt-1">
+                {language === 'ar' ? 'تقبّل الله منك' : language === 'en' ? 'May Allah accept it from you' : "Qu'Allah l'accepte de vous"}
+              </div>
+              <button
+                onClick={onOpenDua}
+                className="mt-4 px-6 py-3 rounded-2xl bg-amber-400 text-emerald-950 font-bold text-sm active:scale-95 shadow-md"
+              >
+                {language === 'ar' ? '🤲 قراءة دعاء ختم القرآن' : language === 'en' ? '🤲 Read the Khatm supplication' : '🤲 Lire le dua de fin de Khatma'}
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* B. Decorative Divider: "اختر مدة ختم القرآن" */}
         <div className="flex items-center justify-center gap-3 pt-2">
           <div className="h-px bg-gradient-to-r from-transparent via-amber-400 to-amber-600 w-16 sm:w-28" />
@@ -505,6 +532,15 @@ export const Dashboard: React.FC<DashboardProps> = ({
             </div>
           </button>
         </div>
+
+        {/* Dua de fin de Khatma : toujours disponible, ouvert uniquement par l'utilisateur */}
+        <button
+          onClick={onOpenDua}
+          className="mt-4 w-full py-3.5 rounded-2xl border border-amber-300/80 bg-white/80 dark:bg-stone-900/70 text-emerald-900 dark:text-emerald-200 font-bold text-sm flex items-center justify-center gap-2 active:scale-95 hover:shadow-md transition-shadow"
+        >
+          <span aria-hidden>🤲</span>
+          <span>{language === 'ar' ? 'دعاء ختم القرآن الكريم' : language === 'en' ? 'Quran completion supplication' : 'Dua de fin de Khatma'}</span>
+        </button>
       </div>
     </div>
   );
