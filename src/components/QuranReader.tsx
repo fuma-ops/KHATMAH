@@ -361,22 +361,58 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
 
   // Écran toujours allumé pendant la lecture (Screen Wake Lock) : repris quand on revient sur
   // l'app, relâché en quittant le lecteur. Navigateurs sans support : sans effet.
+  // Secours (app installée sur iPhone, ou Wake Lock indisponible/refusé) : une vidéo muette de
+  // 16 px jouée en boucle, invisible, empêche la mise en veille (technique « NoSleep »).
   useEffect(() => {
     const nav = navigator as any;
-    if (!nav.wakeLock?.request) return;
     let lock: any = null;
     let alive = true;
-    const acquire = async () => {
-      if (!alive || document.visibilityState !== 'visible' || (lock && !lock.released)) return;
-      try { lock = await nav.wakeLock.request('screen'); } catch { /* refusé (batterie faible…) */ }
+    let video: HTMLVideoElement | null = null;
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+
+    const startVideo = () => {
+      if (!alive) return;
+      if (!video) {
+        video = document.createElement('video');
+        video.src = '/nosleep.mp4';
+        video.muted = true;
+        video.loop = true;
+        video.setAttribute('playsinline', '');
+        video.setAttribute('muted', '');
+        video.setAttribute('aria-hidden', 'true');
+        Object.assign(video.style, { position: 'fixed', width: '1px', height: '1px', opacity: '0', pointerEvents: 'none', bottom: '0', left: '0' });
+        document.body.appendChild(video);
+      }
+      video.play().catch(() => {});
     };
+
+    const acquire = async () => {
+      if (!alive || document.visibilityState !== 'visible') return;
+      let ok = false;
+      if (nav.wakeLock?.request) {
+        if (lock && !lock.released) ok = true;
+        else {
+          try { lock = await nav.wakeLock.request('screen'); ok = true; } catch { ok = false; }
+        }
+      }
+      // Sur iPhone, l'app installée peut ignorer le Wake Lock : on ajoute toujours le secours.
+      if (!ok || isIOS) startVideo();
+    };
+
     const onVisible = () => { if (document.visibilityState === 'visible') acquire(); };
+    // La lecture vidéo exige parfois un geste : on relance au premier toucher dans le lecteur.
+    const onGesture = () => { acquire(); };
     acquire();
     document.addEventListener('visibilitychange', onVisible);
+    document.addEventListener('touchstart', onGesture, { passive: true });
+    document.addEventListener('click', onGesture);
     return () => {
       alive = false;
       document.removeEventListener('visibilitychange', onVisible);
+      document.removeEventListener('touchstart', onGesture);
+      document.removeEventListener('click', onGesture);
       lock?.release?.().catch(() => {});
+      if (video) { video.pause(); video.remove(); video = null; }
     };
   }, []);
 
