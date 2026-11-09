@@ -127,42 +127,31 @@ const TAWHID_KEYWORDS = [
   'الْحَيُّ الْقَيُّومُ', 'هُوَ اللَّهُ', 'آيَاتٍ', 'آيات', 'رَبِّ الْعَالَمِينَ'
 ];
 
+// Texte uthmani -> forme simple pour comparer les mots-clés (sans voyelles ni signes de lecture).
+function normalizeArabic(t: string): string {
+  return t
+    .replace(/[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED]/g, '')
+    .replace(/[ٱأإآ]/g, 'ا')
+    .replace(/ى/g, 'ي')
+    .replace(/ـ/g, '');
+}
+const norm = (list: string[]) => [...new Set(list.map(normalizeArabic))].filter((k) => k.length >= 3);
+const N_PROPHETS = norm(PROPHET_KEYWORDS);
+const N_WARNING = norm(WARNING_KEYWORDS);
+const N_MERCY = norm(MERCY_KEYWORDS);
+const N_COMMAND = norm(COMMANDMENTS_KEYWORDS);
+const N_TAWHID = norm(TAWHID_KEYWORDS);
+
 /**
- * Classifies any Quranic verse into its authentic thematic category.
+ * Thème INDICATIF d'un verset, détecté par mots-clés. Renvoie null si aucun mot-clé ne correspond :
+ * on n'attribue jamais un thème au hasard.
  */
-export function getVerseTheme(text: string, surahNumber: number, verseNumber: number): VerseThemeInfo {
-  // 1. Check Prophet stories
-  if (PROPHET_KEYWORDS.some(k => text.includes(k))) {
-    return THEME_DEFINITIONS.prophets;
-  }
-
-  // 2. Check Warning / Hereafter
-  if (WARNING_KEYWORDS.some(k => text.includes(k))) {
-    return THEME_DEFINITIONS.warning;
-  }
-
-  // 3. Check Mercy / Paradise
-  if (MERCY_KEYWORDS.some(k => text.includes(k))) {
-    return THEME_DEFINITIONS.mercy;
-  }
-
-  // 4. Check Commandments / Ethics / Worship
-  if (COMMANDMENTS_KEYWORDS.some(k => text.includes(k))) {
-    return THEME_DEFINITIONS.commandments;
-  }
-
-  // 5. Check Tawhid / Divine signs
-  if (TAWHID_KEYWORDS.some(k => text.includes(k))) {
-    return THEME_DEFINITIONS.tawhid;
-  }
-
-  // Balanced thematic fallback based on surah nature
-  const hash = (surahNumber * 13 + verseNumber * 7) % 5;
-  switch (hash) {
-    case 0: return THEME_DEFINITIONS.mercy;
-    case 1: return THEME_DEFINITIONS.tawhid;
-    case 2: return THEME_DEFINITIONS.commandments;
-    case 3: return THEME_DEFINITIONS.prophets;
-    default: return THEME_DEFINITIONS.warning;
-  }
+export function getVerseTheme(text: string, _surahNumber: number, _verseNumber: number): VerseThemeInfo | null {
+  const t = normalizeArabic(text || '');
+  if (N_PROPHETS.some((k) => t.includes(k))) return THEME_DEFINITIONS.prophets;
+  if (N_WARNING.some((k) => t.includes(k))) return THEME_DEFINITIONS.warning;
+  if (N_MERCY.some((k) => t.includes(k))) return THEME_DEFINITIONS.mercy;
+  if (N_COMMAND.some((k) => t.includes(k))) return THEME_DEFINITIONS.commandments;
+  if (N_TAWHID.some((k) => t.includes(k))) return THEME_DEFINITIONS.tawhid;
+  return null;
 }

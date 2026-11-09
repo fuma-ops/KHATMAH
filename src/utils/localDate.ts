@@ -1,0 +1,10 @@
+// Dates LOCALES (jour du calendrier de l'utilisateur), jamais UTC : au Maroc (UTC+1), un wird lu
+// après minuit avec toISOString() comptait pour la veille et pouvait casser la série de jours.
+export function localDateISO(d: Date = new Date()): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+export const todayISO = (): string => localDateISO(new Date());

@@ -32,7 +32,7 @@ export const VerseDetailsModal: React.FC<VerseDetailsModalProps> = ({
   if (!isOpen || !verseKey) return null;
 
   const t = TRANSLATIONS[language];
-  const [activeTab, setActiveTab] = useState<'tafsir' | 'asbab' | 'context' | 'lessons'>('tafsir');
+  const [activeTab, setActiveTab] = useState<'tafsir' | 'asbab'>('tafsir');
   const [details, setDetails] = useState<VerseTafsirDetails | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -105,6 +105,7 @@ export const VerseDetailsModal: React.FC<VerseDetailsModalProps> = ({
           const theme = getVerseTheme(arabicText, surahNumber, verseNumber);
           return (
             <>
+              {theme && (
               <div className="px-4 py-2 bg-stone-100/90 dark:bg-stone-800/60 border-b border-stone-200 dark:border-stone-800 flex items-center justify-between text-xs">
                 <div className="flex items-center gap-2">
                   <span 
@@ -116,22 +117,23 @@ export const VerseDetailsModal: React.FC<VerseDetailsModalProps> = ({
                   </span>
                 </div>
                 <span className="text-[11px] text-stone-500 hidden sm:inline">
-                  {language === 'ar' ? theme.descriptionAr : theme.descriptionFr}
+                  {language === 'ar' ? 'تصنيف تقريبي آلي' : language === 'en' ? 'automatic, indicative' : 'thème indicatif (détection automatique)'}
                 </span>
               </div>
+              )}
 
               <div className="p-4 bg-stone-50/60 dark:bg-stone-800/30 border-b border-stone-200 dark:border-stone-800 text-center">
                 <div
                   dir="rtl"
                   className="font-quran text-lg sm:text-xl font-bold leading-loose"
                   style={{
-                    color: theme.colorLight
+                    color: theme?.colorLight
                   }}
                 >
                   {arabicText}
                   <span 
                     className="ayah-end"
-                    style={{ color: theme.dotColor }}
+                    style={{ color: theme?.dotColor || "#b45309" }}
                   >
                     ۝{toArabicNumerals(verseNumber)}
                   </span>
@@ -162,26 +164,6 @@ export const VerseDetailsModal: React.FC<VerseDetailsModalProps> = ({
             }`}
           >
             {t.asbabTab}
-          </button>
-          <button
-            onClick={() => setActiveTab('context')}
-            className={`px-3 py-1.5 rounded-lg whitespace-nowrap transition-colors ${
-              activeTab === 'context'
-                ? 'bg-emerald-800 text-amber-200 font-bold shadow-xs'
-                : 'text-stone-600 dark:text-stone-400 hover:text-stone-900'
-            }`}
-          >
-            {t.contextTab}
-          </button>
-          <button
-            onClick={() => setActiveTab('lessons')}
-            className={`px-3 py-1.5 rounded-lg whitespace-nowrap transition-colors ${
-              activeTab === 'lessons'
-                ? 'bg-emerald-800 text-amber-200 font-bold shadow-xs'
-                : 'text-stone-600 dark:text-stone-400 hover:text-stone-900'
-            }`}
-          >
-            {t.lessonsTab}
           </button>
         </div>
 
@@ -241,37 +223,6 @@ export const VerseDetailsModal: React.FC<VerseDetailsModalProps> = ({
                 </div>
               )}
 
-              {/* Tab 3: Context */}
-              {activeTab === 'context' && (
-                <div className="space-y-3">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-stone-500">
-                    Cohérence du passage & liens thématiques
-                  </h4>
-                  <p className="text-xs sm:text-sm text-stone-800 dark:text-stone-200 leading-relaxed">
-                    {details?.contextText}
-                  </p>
-                </div>
-              )}
-
-              {/* Tab 4: Lessons & Reflections */}
-              {activeTab === 'lessons' && (
-                <div className="space-y-3">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-stone-500">
-                    Points de Méditation (Tadabbur)
-                  </h4>
-                  <div className="space-y-2">
-                    {details?.lessons.map((lesson, idx) => (
-                      <div
-                        key={idx}
-                        className="p-3 rounded-xl bg-white/70 dark:bg-stone-800/60 border border-stone-200 dark:border-stone-800 text-xs sm:text-sm text-stone-700 dark:text-stone-300 flex items-start gap-2"
-                      >
-                        <span className="text-emerald-800 font-bold">•</span>
-                        <span>{lesson}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
             </>
           )}
         </div>

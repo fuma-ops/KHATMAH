@@ -1,4 +1,5 @@
 import { UserProgress, ReadingSettings } from '../types/quran';
+import { todayISO } from './localDate';
 
 const STORAGE_KEY_PROGRESS = 'alkhatma_user_progress_v2';
 const STORAGE_KEY_SETTINGS = 'alkhatma_reading_settings_v2';
@@ -17,7 +18,7 @@ export const DEFAULT_SETTINGS: ReadingSettings = {
 };
 
 const getTodayDateString = (): string => {
-  return new Date().toISOString().split('T')[0];
+  return todayISO();
 };
 
 export const DEFAULT_PROGRESS: UserProgress = {

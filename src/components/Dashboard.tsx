@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { 
   BookOpen, 
   Calendar, 
@@ -18,12 +18,13 @@ import { KhatmaState, KHATMA_PLANS_CONFIG } from '../services/khatmaService';
 import { AppLanguage } from '../utils/translations';
 
 // Import the generated clean high-fidelity assets (no baked-in UI or text)
-import sacredQuranHeroImg from '../assets/images/sacred_quran_sunset_hero_1794224314300.jpg';
-import royalEmblemImg from '../assets/images/khatmati_royal_emblem_1794224335265.jpg';
-import quranRehalImg from '../assets/images/quran_rehal_card_1794223662097.jpg';
-import plannerQuillImg from '../assets/images/planner_quill_card_1794223680272.jpg';
-import booksBookmarkImg from '../assets/images/books_bookmark_card_1794223697975.jpg';
-import lanternStudyImg from '../assets/images/lantern_study_card_1794223715621.jpg';
+import sacredQuranHeroImg from '../assets/images/sacred_quran_sunset_hero_1794224314300.webp';
+import royalEmblemImg from '../assets/images/khatmati_royal_emblem_1794224335265.webp';
+import quranRehalImg from '../assets/images/quran_rehal_card_1794223662097.webp';
+import plannerQuillImg from '../assets/images/planner_quill_card_1794223680272.webp';
+import booksBookmarkImg from '../assets/images/books_bookmark_card_1794223697975.webp';
+import lanternStudyImg from '../assets/images/lantern_study_card_1794223715621.webp';
+import { PWAInstallButton } from './PWAInstallButton';
 
 interface DashboardProps {
   khatma: KhatmaState;
@@ -49,6 +50,17 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const isRtl = language === 'ar';
   const [isLangOpen, setIsLangOpen] = useState(false);
   const [showNotificationToast, setShowNotificationToast] = useState(false);
+  // Bouton principal : s'il est caché (sous la barre du bas ou hors écran), un bouton flottant le remplace.
+  const ctaRef = useRef<HTMLButtonElement | null>(null);
+  const [ctaVisible, setCtaVisible] = useState(true);
+  useEffect(() => {
+    const el = ctaRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return;
+    const io = new IntersectionObserver(([e]) => setCtaVisible(e.isIntersecting), { rootMargin: '0px 0px -84px 0px', threshold: 0.9 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  const ctaLabel = language === 'ar' ? 'متابعة القراءة' : language === 'en' ? 'Continue reading' : 'Continuer la lecture';
 
   const totalCompleted = khatma.completedPages.length;
   const overallPercentage = Math.round((totalCompleted / 150) * 100);
@@ -60,6 +72,15 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
   return (
     <div className="w-full min-h-screen flex flex-col bg-[#FAF7EE] text-[#24211E] dark:bg-[#151311] dark:text-[#F5F5F4] transition-colors pb-24 lg:pb-12">
+      {!ctaVisible && (
+        <button
+          onClick={onContinueReading}
+          className="lg:hidden fixed z-40 bottom-[74px] left-4 right-4 py-3.5 rounded-2xl bg-[#064e3b] active:scale-95 text-white font-bold text-sm shadow-xl shadow-emerald-900/30 flex items-center justify-center gap-2 animate-pulse-soft"
+        >
+          <BookOpen className="w-4 h-4 text-amber-300" />
+          <span>{ctaLabel}</span>
+        </button>
+      )}
       {/* 1. HERO BANNER: Sacred Holy Quran Centerpiece on Carved Rehal at Sunset */}
       <div className="relative w-full overflow-hidden border-b border-amber-900/10 dark:border-white/5">
         {/* Sacred Quran Centerpiece Background Artwork */}
@@ -81,6 +102,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6 pt-4 pb-14 sm:pb-20 flex flex-col items-center z-10">
           {/* Top Bar on Hero: Language, Notification Bell, User Avatar */}
           <div className="w-full flex items-center justify-end gap-2 sm:gap-3 z-30">
+            {/* Télécharger l'app (PWA) : visible sur la version web, caché une fois installée */}
+            <div className={isRtl ? 'ml-auto' : 'mr-auto'}>
+              <PWAInstallButton language={language} variant="hero" />
+            </div>
             {/* Language Selector Dropdown */}
             <div className="relative">
               <button
@@ -308,11 +333,12 @@ export const Dashboard: React.FC<DashboardProps> = ({
             {/* Right: Big CTA Button in ROYAL GREEN */}
             <div className="w-full md:w-auto shrink-0">
               <button
+                ref={ctaRef}
                 onClick={onContinueReading}
                 className="w-full md:w-auto px-7 py-4 rounded-2xl bg-[#064e3b] hover:bg-[#047857] active:bg-[#022c22] text-white font-bold text-sm sm:text-base transition-all shadow-md flex items-center justify-center gap-3 group hover:scale-[1.01]"
               >
                 <BookOpen className="w-5 h-5 text-amber-300" />
-                <span>{language === 'ar' ? 'متابعة القراءة' : 'Continuer la lecture'}</span>
+                <span>{ctaLabel}</span>
                 <ChevronRight className={`w-5 h-5 text-amber-300 group-hover:translate-x-0.5 transition-transform ${isRtl ? 'rotate-180 group-hover:-translate-x-0.5' : ''}`} />
               </button>
             </div>
@@ -363,7 +389,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   {plan.durationDays} {language === 'ar' ? (plan.durationDays <= 10 ? 'أيام' : 'يوماً') : 'jours'}
                 </span>
                 <span className={`text-[10px] sm:text-[11px] mt-0.5 font-mono ${isSelected ? 'text-amber-200' : 'text-stone-500'}`}>
-                  {plan.dailyPages} {language === 'ar' ? (plan.dailyPages <= 10 ? 'صفحات/يوم' : 'صفحة/يوم') : 'pages/jour'}
+                  {(() => { const lo = Math.min(...plan.schedule), hi = Math.max(...plan.schedule); return lo === hi ? lo : `${lo}–${hi}`; })()} {language === 'ar' ? (plan.dailyPages <= 10 ? 'صفحات/يوم' : 'صفحة/يوم') : language === 'en' ? 'pages/day' : 'pages/jour'}
                 </span>
               </button>
             );

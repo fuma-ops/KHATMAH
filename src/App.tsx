@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { Header } from './components/Header';
 import { Dashboard } from './components/Dashboard';
-import royalEmblemImg from './assets/images/khatmati_royal_emblem_1794224335265.jpg';
+import royalEmblemImg from './assets/images/khatmati_royal_emblem_1794224335265.webp';
 import { KhatmaSelector } from './components/KhatmaSelector';
 import { QuranReader } from './components/QuranReader';
 import { ReadingHistory } from './components/ReadingHistory';
@@ -44,6 +44,7 @@ import { KhatmaState, getTodaysAssignedTarget, PastKhatmaRecord } from './servic
 import { getPageSurahRange, getPlanScheduleBreakdown } from './services/khatmaScheduleHelper';
 import { ReadingSettings } from './types/quran';
 import { AppLanguage } from './utils/translations';
+import { todayISO } from './utils/localDate';
 
 export default function App() {
   const [khatma, setKhatma] = useState<KhatmaState>(loadKhatmaState);
@@ -180,7 +181,7 @@ export default function App() {
       khatmaNumber: khatma.khatmaNumber || 1,
       durationDays: khatma.durationDays,
       planId: khatma.planId,
-      startDate: new Date().toISOString().split('T')[0],
+      startDate: todayISO(),
       startDateTime: new Date().toISOString(),
       pastKhatmas: khatma.pastKhatmas || []
     });
@@ -189,7 +190,7 @@ export default function App() {
   const handleToggleCompletePage = (juz: number, page: number) => {
     const key = `${juz}-${page}`;
     const exists = khatma.completedPages.includes(key);
-    const todayStr = new Date().toISOString().split('T')[0];
+    const todayStr = todayISO();
     const now = new Date();
     const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
@@ -749,7 +750,7 @@ export default function App() {
         }}
         language={language}
         khatma={khatma}
-        pagesReadToday={celebratedPagesCount || (khatma.dailyLog[new Date().toISOString().split('T')[0]] || 1)}
+        pagesReadToday={celebratedPagesCount || (khatma.dailyLog[todayISO()] || 1)}
         wirdNumber={celebratedWirdNumber}
         onStartNextWird={(nextWirdNum) => {
           setIsDailyCelebrationOpen(false);

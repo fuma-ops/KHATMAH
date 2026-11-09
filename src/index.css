@@ -58,3 +58,10 @@
   background-color: #f5eedb !important;
   border-color: #e6dac1 !important;
 }
+
+/* Bouton flottant « Continuer la lecture » : respiration douce pour rester visible sans agresser. */
+@keyframes pulse-soft {
+  0%, 100% { box-shadow: 0 10px 25px -5px rgba(6, 78, 59, 0.35); scale: 1; }
+  50% { box-shadow: 0 10px 32px -2px rgba(6, 78, 59, 0.55); scale: 1.02; }
+}
+.animate-pulse-soft { animation: pulse-soft 2.4s ease-in-out infinite; }

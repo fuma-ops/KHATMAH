@@ -6,7 +6,10 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 export function usePWAInstall() {
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  // L'événement peut arriver avant le montage du bouton : main.tsx le garde dans window.__khatmahInstall.
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(
+    () => ((window as any).__khatmahInstall as BeforeInstallPromptEvent) || null
+  );
   const [isInstalled, setIsInstalled] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
 

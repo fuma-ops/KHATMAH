@@ -1,4 +1,3 @@
-import { getSurahByNumber } from '../data/surahsData';
 
 export interface VerseTafsirDetails {
   verseKey: string; // e.g. "2:255"
@@ -10,8 +9,6 @@ export interface VerseTafsirDetails {
   hasSpecificAsbab: boolean;
   asbabText: string;
   asbabSource?: string;
-  contextText: string;
-  lessons: string[];
 }
 
 // In-memory cache for verse tafsir responses
@@ -29,19 +26,19 @@ const VERIFIED_ASBAB_AL_NUZUL: Record<string, { textAr: string; textFr: string; 
     textAr: "سأل أعرابي رسول الله ﷺ: أقريب ربنا فنناجيه، أم بعيد فنناديه؟ فأنزل الله تعالى: {وَإِذَا سَأَلَكَ عِبَادِي عَنِّي فَإِنِّي قَرِيبٌ}.",
     textFr: "Un bédouin demanda au Prophète ﷺ : « Notre Seigneur est-Il proche pour que nous Lui chuchotions, ou lointain pour que nous L'appelions ? » Alors Allah révéla : {Et quand Mes serviteurs t'interrogent sur Moi, Je suis proche}.",
     textEn: "A bedouin asked the Prophet ﷺ: 'Is our Lord near so that we may whisper to Him, or far so that we should shout to Him?' Thereupon Allah revealed: {And when My servants ask you concerning Me, indeed I am near}.",
-    source: "Ibn Abi Hatim & Tafsir Ibn Kathir"
+    source: "Ibn Abi Hatim, cité par Ibn Kathir (chaîne discutée)"
   },
   "2:189": {
     textAr: "سأل معاذ بن جبل وثعلبة بن غنمة رسول الله ﷺ عن الأهلة وسبب تدرجها، فنزلت الآية مبينة منافعها للناس ومواقيت الحج.",
     textFr: "Mu'adh ibn Jabal et Tha'labah ibn Ghanamah interrogèrent le Messager d'Allah ﷺ sur les phases de la lune ; ce verset fut révélé pour en expliquer l'utilité dans le calendrier des cultes et du Hajj.",
     textEn: "Mu'adh ibn Jabal asked the Prophet ﷺ about the waxing and waning of new moons; this verse revealed their purpose in marking time for mankind and pilgrimage.",
-    source: "Tafsir Al-Tabari & As-Suyuti"
+    source: "As-Suyuti, Lubab an-Nuqul (rapporté par Abu Nu'aym et Ibn 'Asakir, chaîne faible)"
   },
   "2:256": {
     textAr: "نزلت في رجل من الأنصار من بني سالم بن عوف كان له ابنان تنصرا قبل البعثة وأراد إكراههما على الإسلام، فنهاه الله عن ذلك.",
     textFr: "Révélé à propos d'un Médinois des Banu Salim dont les deux fils s'étaient christianisés avant l'Islam ; il voulut les forcer à embrasser l'Islam, mais Allah révéla : {Nulle contrainte en religion}.",
     textEn: "Revealed regarding an Ansar whose sons had become Christians; he wanted to compel them to embrace Islam, but Allah revealed: {There is no compulsion in religion}.",
-    source: "Sunan Abi Dawud & As-Suyuti"
+    source: "Tafsir At-Tabari (d'après As-Suddi) ; As-Suyuti, Lubab an-Nuqul"
   },
   "3:195": {
     textAr: "عن أم سلمة رضي الله عنها أنها قالت: يا رسول الله، لا أسمع الله ذكر النساء في الهجرة بشيء، فأنزل الله الآية الكريمة: {فَاسْتَجَابَ لَهُمْ رَبُّهُمْ أَنِّي لَا أُضِيعُ عَمَلَ عَامِلٍ مِّنكُم مِّن ذَكَرٍ أَوْ أُنثَىٰ}.",
@@ -108,9 +105,9 @@ export async function getVerseDetails(
 
   // Fallback default message when no specific authentic Asbab al-Nuzul is established
   const noAsbabMsg = {
-    ar: "لم يرد سبب نزول خاص ثابت بسند معتمد في هذا الموضع.",
-    fr: "Aucune circonstance spécifique de révélation n'est établie pour ce verset.",
-    en: "No specific authentic occasion of revelation has been established."
+    ar: "لا يتضمن التطبيق سبب نزول موثقاً لهذه الآية. راجع كتب أسباب النزول (الواحدي، السيوطي) للتوسع.",
+    fr: "L'application ne contient pas de cause de révélation documentée pour ce verset. Pour approfondir, voir les ouvrages d'asbab an-nuzul (Al-Wahidi, As-Suyuti).",
+    en: "This app has no documented occasion of revelation for this verse. See the asbab al-nuzul works (Al-Wahidi, As-Suyuti) to learn more."
   };
 
   const asbabData = VERIFIED_ASBAB_AL_NUZUL[verseKey];
@@ -139,44 +136,16 @@ export async function getVerseDetails(
     console.warn("Could not fetch remote tafsir, using structured fallback", err);
   }
 
-  if (!tafsirText) {
+  // Jamais de tafsir inventé : sans connexion, on le dit simplement.
+  const tafsirUnavailable = !tafsirText;
+  if (tafsirUnavailable) {
+    tafsirSource = '';
     tafsirText = language === 'ar'
-      ? "هذه الآية الكريمة تدعو إلى استحضار عظمة الله تعالى، ولزوم طاعته، وتدبر حكمته في التشريع والكون."
+      ? "تعذّر تحميل التفسير. تحقّق من اتصالك بالإنترنت ثم أعد فتح الآية."
       : language === 'fr'
-      ? "Ce verset sacré appelle à contempler la majesté divine, à observer avec sincérité les commandements d'Allah et à s'ancrer dans la piété."
-      : "This noble verse invites contemplation upon the divine majesty, sincere adherence to Allah's guidance, and moral excellence.";
+      ? "Le tafsir n'a pas pu être chargé. Vérifiez votre connexion puis rouvrez le verset."
+      : "The tafsir could not be loaded. Check your connection and open the verse again.";
   }
-
-  // Context description
-  const surahMeta = getSurahByNumber(surahNumber);
-  const surahNameAr = surahMeta ? surahMeta.nameArabic : '';
-  const surahNameFr = surahMeta ? surahMeta.nameTransliterated : '';
-  const surahNameEn = surahMeta ? surahMeta.nameTransliterated : '';
-
-  const contextText = language === 'ar'
-    ? `تأتي هذه الآية في سياق سورة ${surahNameAr}، متصلة بما قبلها من التوجيهات الربانية والتربية الإيمانية للمؤمنين.`
-    : language === 'fr'
-    ? `Ce verset s'inscrit dans la trame de la sourate ${surahNameFr}, harmonieusement lié aux versets précédents pour guider le croyant dans son cheminement spirituel.`
-    : `This verse fits within the discourse of Surah ${surahNameEn}, intimately connected to adjacent verses guiding the believer in devotion and character.`;
-
-  // Main practical lessons
-  const lessons = language === 'ar'
-    ? [
-        "الإخلاص التام لله رب العالمين في السر والعلن.",
-        "اليقين بوعد الله والاستعانة بالصبر والصلاة في مواجهة متقلبات الحياة.",
-        "ترجمة تلاوة القرآن إلى سلوك واقعي نافع للمجتمع."
-      ]
-    : language === 'fr'
-    ? [
-        "Sincérité totale envers Allah dans les actions visibles comme cachées.",
-        "Chercher secours dans l'endurance et la prière face aux épreuves de l'existence.",
-        "Traduire la récitation du Coran en actes bienveillants et en intégrité quotidienne."
-      ]
-    : [
-        "Complete sincerity toward Allah in both private and public life.",
-        "Seeking strength through patience and prayer amidst life's challenges.",
-        "Transforming recitation into upright character and compassionate conduct."
-      ];
 
   const result: VerseTafsirDetails = {
     verseKey,
@@ -187,9 +156,7 @@ export async function getVerseDetails(
     tafsirSource,
     hasSpecificAsbab,
     asbabText,
-    asbabSource,
-    contextText,
-    lessons
+    asbabSource
   };
 
   tafsirCache.set(cacheKey, result);

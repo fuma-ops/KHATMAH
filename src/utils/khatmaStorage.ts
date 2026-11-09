@@ -1,5 +1,6 @@
 import { KhatmaState } from '../services/khatmaService';
 import { AppLanguage } from './translations';
+import { todayISO } from './localDate';
 
 const STORAGE_KEY_KHATMA = 'khatmati_user_state_v3';
 const STORAGE_KEY_LANG = 'khatmati_user_lang_v3';
@@ -9,7 +10,7 @@ export const DEFAULT_KHATMA_STATE: KhatmaState = {
   hasStarted: false,
   planId: 'plan-30-days',
   durationDays: 30,
-  startDate: new Date().toISOString().split('T')[0],
+  startDate: todayISO(),
   status: 'active',
   completedPages: [], // STRICTLY EMPTY: No progress until user validates!
   currentPosition: {
@@ -21,7 +22,7 @@ export const DEFAULT_KHATMA_STATE: KhatmaState = {
   completedWirds: [],
   pastKhatmas: [],
   celebratedWirds: [],
-  lastReadDate: new Date().toISOString().split('T')[0],
+  lastReadDate: todayISO(),
   bookmarks: []
 };
 

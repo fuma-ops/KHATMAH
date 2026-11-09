@@ -11,11 +11,11 @@ export default defineConfig(() => {
       tailwindcss(),
       VitePWA({
         registerType: 'autoUpdate',
-        includeAssets: ['favicon.ico', 'icon.svg', 'apple-touch-icon.png'],
+        includeAssets: ['icon.svg', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png'],
         manifest: {
           id: '/',
-          name: 'KHATMATI (ختمتي) — Quran Reading & Khatma Planner',
-          short_name: 'KHATMATI',
+          name: 'KHATMAH (ختمة) — Complete Quran, 5 pages per Juz',
+          short_name: 'KHATMAH',
           description: 'Read the complete Holy Quran at your own pace with 5 condensed digital pages per Juz.',
           theme_color: '#064e3b',
           background_color: '#faf7ee',
@@ -23,16 +23,16 @@ export default defineConfig(() => {
           start_url: '/',
           scope: '/',
           icons: [
-            {
-              src: '/icon.svg',
-              sizes: '192x192 512x512',
-              type: 'image/svg+xml',
-              purpose: 'any'
-            }
+            { src: '/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+            { src: '/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+            { src: '/icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+            { src: '/icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' }
           ]
         },
         workbox: {
-          globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
+          globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,woff,woff2}'],
+          // Captures d'écran de l'éditeur (AI Studio) : inutiles hors ligne, 4,9 Mo de moins à installer.
+          globIgnores: ['**/assets/aistudio/**'],
           runtimeCaching: [
             {
               urlPattern: /^https:\/\/api\.quran\.com\/.*/i,

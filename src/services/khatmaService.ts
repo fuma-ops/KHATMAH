@@ -1,3 +1,4 @@
+import { todayISO } from '../utils/localDate';
 export interface KhatmaPlanConfig {
   id: string;
   durationDays: 3 | 5 | 7 | 9 | 15 | 30;
@@ -166,7 +167,8 @@ export function calculateRedistribution(
   const newDailyTarget = Math.ceil(remainingPages / remainingDays);
 
   const plan = KHATMA_PLANS_CONFIG.find(p => p.durationDays === khatma.durationDays) || KHATMA_PLANS_CONFIG[5];
-  const expectedCompletedByNow = Math.min(150, daysElapsed * plan.dailyPages);
+  // Cumul exact du programme (les jours n'ont pas tous le même nombre de pages, ex. 22/21 en 7 jours).
+  const expectedCompletedByNow = Math.min(150, plan.schedule.slice(0, daysElapsed).reduce((t, n) => t + n, 0));
 
   return {
     remainingPages,
@@ -185,7 +187,7 @@ export function getTodaysAssignedTarget(khatma: KhatmaState): {
   completedToday: number;
   progressPercent: number;
 } {
-  const todayStr = new Date().toISOString().split('T')[0];
+  const todayStr = todayISO();
   const completedToday = khatma.dailyLog[todayStr] || 0;
 
   const redist = calculateRedistribution(khatma);

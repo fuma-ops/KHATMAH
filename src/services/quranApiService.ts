@@ -6,18 +6,20 @@ export interface StandardPageGroup {
   standardPages: number[]; // e.g. [1, 2, 3, 4]
 }
 
-// 30 Juz page ranges in standard Madinah Mushaf (604 pages total)
+// 30 Juz page ranges in the Madinah Mushaf (604 pages). A Juz can start or end in the middle of a
+// page: the shared page is listed in both Juz, and only the verses of the current Juz are shown
+// (filter on juz_number), so every verse is read exactly once.
 export const JUZ_PAGE_RANGES: { juz: number; startPage: number; endPage: number }[] = [
   { juz: 1, startPage: 1, endPage: 21 },
   { juz: 2, startPage: 22, endPage: 41 },
-  { juz: 3, startPage: 42, endPage: 61 },
+  { juz: 3, startPage: 42, endPage: 62 },
   { juz: 4, startPage: 62, endPage: 81 },
   { juz: 5, startPage: 82, endPage: 101 },
-  { juz: 6, startPage: 102, endPage: 120 },
+  { juz: 6, startPage: 102, endPage: 121 },
   { juz: 7, startPage: 121, endPage: 141 },
   { juz: 8, startPage: 142, endPage: 161 },
   { juz: 9, startPage: 162, endPage: 181 },
-  { juz: 10, startPage: 182, endPage: 200 },
+  { juz: 10, startPage: 182, endPage: 201 },
   { juz: 11, startPage: 201, endPage: 221 },
   { juz: 12, startPage: 222, endPage: 241 },
   { juz: 13, startPage: 242, endPage: 261 },
@@ -32,7 +34,7 @@ export const JUZ_PAGE_RANGES: { juz: number; startPage: number; endPage: number 
   { juz: 22, startPage: 422, endPage: 441 },
   { juz: 23, startPage: 442, endPage: 461 },
   { juz: 24, startPage: 462, endPage: 481 },
-  { juz: 25, startPage: 482, endPage: 501 },
+  { juz: 25, startPage: 482, endPage: 502 },
   { juz: 26, startPage: 502, endPage: 521 },
   { juz: 27, startPage: 522, endPage: 541 },
   { juz: 28, startPage: 542, endPage: 561 },
@@ -77,6 +79,7 @@ export interface StandardPageVerses {
     surahNumber: number;
     verseKey: string;
     textUthmani: string;
+    juzNumber: number;
     textFrench: string;
     textEnglish: string;
     audioUrl: string;
@@ -102,7 +105,7 @@ export async function fetchStandardPage(pageNumber: number): Promise<StandardPag
   }
 
   // Check localStorage cache
-  const storageKey = `mushaf_std_page_v1_${pageNumber}`;
+  const storageKey = `mushaf_std_page_v2_${pageNumber}`;
   try {
     const cached = localStorage.getItem(storageKey);
     if (cached) {
@@ -112,7 +115,7 @@ export async function fetchStandardPage(pageNumber: number): Promise<StandardPag
     }
   } catch {}
 
-  const url = `https://api.quran.com/api/v4/verses/by_page/${pageNumber}?words=false&translations=136,85&fields=text_uthmani,chapter_id,verse_number,verse_key`;
+  const url = `https://api.quran.com/api/v4/verses/by_page/${pageNumber}?words=false&translations=136,85&fields=text_uthmani,chapter_id,verse_number,verse_key,juz_number`;
 
   const res = await fetch(url);
   if (!res.ok) {
@@ -135,6 +138,7 @@ export async function fetchStandardPage(pageNumber: number): Promise<StandardPag
       surahNumber: v.chapter_id,
       verseKey: v.verse_key,
       textUthmani: v.text_uthmani,
+      juzNumber: v.juz_number,
       textFrench: cleanText(frenchTrans),
       textEnglish: cleanText(englishTrans),
       audioUrl
@@ -166,9 +170,13 @@ export async function fetchCondensedPageFull(
   const stdPagesNumbers = getStandardPagesForCondensed(juzNumber, pageIndex);
   
   // Fetch all standard pages in parallel
-  const standardPages = await Promise.all(
+  const rawPages = await Promise.all(
     stdPagesNumbers.map(p => fetchStandardPage(p))
   );
+  // Pages partagées entre deux Juz : on ne garde que les versets du Juz lu.
+  const standardPages = rawPages
+    .map(p => ({ ...p, verses: p.verses.filter(v => !v.juzNumber || v.juzNumber === juzNumber) }))
+    .filter(p => p.verses.length > 0);
 
   const totalVersesCount = standardPages.reduce((acc, p) => acc + p.verses.length, 0);
 

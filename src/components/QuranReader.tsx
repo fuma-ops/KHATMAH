@@ -68,6 +68,19 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
   const [autoFitEnabled, setAutoFitEnabled] = useState<boolean>(true);
   const [effectiveFontSize, setEffectiveFontSize] = useState<number>(settings.fontSize);
   const [effectiveLineHeight, setEffectiveLineHeight] = useState<number>(1.75);
+  // true quand le texte dépasse l'écran (police choisie trop grande, ou portion trop longue même à la
+  // taille minimale) : on autorise alors le défilement pour qu'AUCUN verset ne soit jamais masqué.
+  const [overflowing, setOverflowing] = useState<boolean>(false);
+  const [loadError, setLoadError] = useState<boolean>(false);
+  const [retryTick, setRetryTick] = useState<number>(0);
+  const refitTries = useRef<number>(0);
+  useEffect(() => { refitTries.current = 0; }, [juzNumber, pageIndex, settings.fontSize]);
+  // Vraies pages du mushaf de Médine couvertes par cette page condensée (ex. « 22–25 »).
+  const mushafRange = fullPages.length
+    ? fullPages[0].pageNumber === fullPages[fullPages.length - 1].pageNumber
+      ? String(fullPages[0].pageNumber)
+      : `${fullPages[0].pageNumber}–${fullPages[fullPages.length - 1].pageNumber}`
+    : '';
 
   // Visual Comfort & Reading Guide Modes (Sobriety & Clarity without rainbow)
   // 'classic' = 100% noble black ink + subtle golden ayah markers
@@ -81,6 +94,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
+    setLoadError(false);
 
     if (audioRef.current) {
       audioRef.current.pause();
@@ -97,6 +111,8 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
       .catch(err => {
         if (!cancelled) {
           console.error("Failed to load verses:", err);
+          setFullPages([]);
+          setLoadError(true);
           setLoading(false);
         }
       });
@@ -104,7 +120,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
     return () => {
       cancelled = true;
     };
-  }, [juzNumber, pageIndex]);
+  }, [juzNumber, pageIndex, retryTick]);
 
   // Recalculate optimal font size & line spacing so text EXPANDS to fill the available height with ZERO scrolling
   const recalculateFontSize = useCallback(() => {
@@ -115,16 +131,20 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
     if (!autoFitEnabled) {
       setEffectiveFontSize(settings.fontSize);
       setEffectiveLineHeight(1.75);
+      setOverflowing(true);
       return;
     }
 
+    // Mesure dans un état neutre (sans barre de défilement), quel que soit l'état précédent.
+    const prevOverflow = container.style.overflowY;
+    container.style.overflowY = 'hidden';
     // Accurate calculation of available content box inside container
     const compStyle = window.getComputedStyle(container);
     const padTop = parseFloat(compStyle.paddingTop) || 12;
     const padBottom = parseFloat(compStyle.paddingBottom) || 12;
     // 6px safety margin so text never touches boundaries or overflows
     const availHeight = container.clientHeight - padTop - padBottom - 6;
-    if (availHeight <= 80) return;
+    if (availHeight <= 80) { container.style.overflowY = prevOverflow; return; }
 
     const isMobile = window.innerWidth < 640;
     const isTablet = window.innerWidth >= 640 && window.innerWidth < 1024;
@@ -178,6 +198,9 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
     content.style.lineHeight = String(bestLH);
     setEffectiveFontSize(bestFont);
     setEffectiveLineHeight(bestLH);
+    // Garde-fou : si même la plus petite taille ne suffit pas, on passe en défilement.
+    setOverflowing(content.scrollHeight > availHeight + 1);
+    container.style.overflowY = prevOverflow;
   }, [autoFitEnabled, settings.fontSize]);
 
   useLayoutEffect(() => {
@@ -187,20 +210,55 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
       const t2 = setTimeout(recalculateFontSize, 120);
       const t3 = setTimeout(recalculateFontSize, 300);
 
-      // Recalculate once web fonts (Amiri Quran) are fully rendered
+      // Recalculate once web fonts (Amiri Quran) are fully rendered.
+      // fonts.ready peut se résoudre avant que la police du Coran soit demandée : on la charge explicitement.
       if (document.fonts && document.fonts.ready) {
         document.fonts.ready.then(() => {
           recalculateFontSize();
         });
+        // Le sous-ensemble ARABE de la police se charge à part : on le demande avec du texte arabe.
+        document.fonts.load("20px 'Amiri Quran'", 'بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ').then(() => recalculateFontSize()).catch(() => {});
       }
+      // Passes de contrôle : la police et les images de l'en-tête peuvent finir de charger plus tard.
+      const t4 = setTimeout(recalculateFontSize, 700);
+      const t5 = setTimeout(recalculateFontSize, 1500);
+      const t6 = setTimeout(recalculateFontSize, 3000);
 
       return () => {
         clearTimeout(t1);
         clearTimeout(t2);
         clearTimeout(t3);
+        clearTimeout(t4);
+        clearTimeout(t5);
+        clearTimeout(t6);
       };
     }
   }, [loading, fullPages, autoFitEnabled, recalculateFontSize]);
+
+  // Garde-fou final, après chaque rendu : si la fin du texte dépasse le bas de l'écran,
+  // on active le défilement. Aucun verset ne doit jamais être masqué.
+  useLayoutEffect(() => {
+    const check = () => {
+      const container = containerRef.current;
+      const content = contentRef.current;
+      if (!container || !content || loading) return;
+      const over = content.getBoundingClientRect().bottom > container.getBoundingClientRect().bottom + 1
+        || content.scrollHeight > container.clientHeight + 1;
+      // Écart entre le calcul et l'affichage (police arrivée entre-temps) : on refait le calcul,
+      // 4 fois au plus par page ; si le texte ne tient toujours pas, le défilement reste actif.
+      const fitsNow = !over && content.scrollHeight < container.clientHeight - 24;
+      if (autoFitEnabled && (over ? !overflowing : overflowing && fitsNow) && refitTries.current < 4) {
+        refitTries.current += 1;
+        recalculateFontSize();
+      } else if (over && !overflowing) {
+        setOverflowing(true);
+      }
+    };
+    check();
+    const id = setInterval(check, 500);
+    const stop = setTimeout(() => clearInterval(id), 5000);
+    return () => { clearInterval(id); clearTimeout(stop); };
+  });
 
   // Window resize and ResizeObserver to smoothly expand text whenever screen or orientation changes
   useEffect(() => {
@@ -218,10 +276,14 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
       });
       ro.observe(containerRef.current);
     }
+    // La police du Coran arrive parfois après le premier calcul : on recalcule à chaque chargement.
+    const fonts = (document as any).fonts;
+    fonts?.addEventListener?.('loadingdone', handleResize);
 
     return () => {
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('orientationchange', handleResize);
+      fonts?.removeEventListener?.('loadingdone', handleResize);
       if (ro) ro.disconnect();
     };
   }, [recalculateFontSize]);
@@ -322,10 +384,18 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
           </button>
 
           {/* Position indicator */}
-          <div className="flex items-center gap-1.5 tracking-wider font-mono text-[11px] sm:text-[13px] font-bold text-emerald-950 dark:text-emerald-300 px-1 select-none">
+          <div
+            className="flex items-center gap-1.5 tracking-wider font-mono text-[11px] sm:text-[13px] font-bold text-emerald-950 dark:text-emerald-300 px-1 select-none"
+            title={mushafRange ? (language === 'ar' ? `صفحات المصحف ${mushafRange}` : `Mushaf : pages ${mushafRange}`) : undefined}
+          >
             <span>{t.juzLabel} {juzNumber}</span>
             <span className="opacity-30">|</span>
             <span>{t.pageLabel} {pageIndex} / 5</span>
+            {mushafRange && (
+              <span className="hidden sm:inline font-sans font-medium text-[11px] text-stone-500 dark:text-stone-400">
+                ({language === 'ar' ? 'المصحف' : 'Mushaf'} {mushafRange})
+              </span>
+            )}
           </div>
 
           {/* Next Page Arrow */}
@@ -517,10 +587,26 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
           if (isGuideMenuOpen) setIsGuideMenuOpen(false);
         }}
         className={`flex-1 w-full max-w-4xl lg:max-w-5xl xl:max-w-6xl mx-auto px-3 sm:px-6 md:px-8 pt-3 sm:pt-4 pb-3 sm:pb-5 flex flex-col justify-start items-center relative ${
-          autoFitEnabled ? 'overflow-hidden' : 'overflow-y-auto scrollbar-none'
+          autoFitEnabled && !overflowing ? 'overflow-hidden' : 'overflow-y-auto scrollbar-none'
         }`}
       >
-        {loading ? (
+        {!loading && loadError ? (
+          <div className="h-full flex flex-col items-center justify-center gap-3 text-center px-6 text-stone-500">
+            <span className="text-sm font-medium">
+              {language === 'ar'
+                ? 'تعذّر تحميل الآيات. تحقّق من اتصالك بالإنترنت ثم أعد المحاولة.'
+                : language === 'en'
+                ? 'Could not load the verses. Check your connection and try again.'
+                : 'Impossible de charger les versets. Vérifiez votre connexion puis réessayez.'}
+            </span>
+            <button
+              onClick={() => setRetryTick((n) => n + 1)}
+              className="px-4 py-2 rounded-full bg-emerald-800 text-white text-sm font-semibold active:scale-95"
+            >
+              {language === 'ar' ? 'إعادة المحاولة' : language === 'en' ? 'Retry' : 'Réessayer'}
+            </button>
+          </div>
+        ) : loading ? (
           <div className="h-full flex flex-col items-center justify-center gap-2 text-stone-400">
             <Loader2 className="w-7 h-7 animate-spin text-emerald-800" />
             <span className="text-xs font-medium">Chargement des versets...</span>
@@ -587,7 +673,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                           }
                           onSelectVerseForDetails(verse.verseKey, verse.textUthmani, verse.surahNumber, verse.verseNumber, verse.audioUrl);
                         }}
-                        className={`cursor-pointer rounded-sm px-0.5 transition-all inline ${
+                        className={`cursor-pointer rounded-sm px-0.5 transition-colors inline ${
                           isVersePlaying 
                             ? 'bg-amber-300/50 dark:bg-amber-900/40 font-bold' 
                             : isFocused
@@ -615,6 +701,13 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                 })}
               </React.Fragment>
             ))}
+          </div>
+        )}
+        {!loading && !loadError && autoFitEnabled && overflowing && (
+          <div className="sticky bottom-0 h-0 w-full pointer-events-none flex justify-center overflow-visible">
+            <span className="-translate-y-[130%] text-[11px] font-semibold text-emerald-900/80 dark:text-emerald-300/80 bg-white/80 dark:bg-stone-900/80 rounded-full px-3 py-1 shadow-sm">
+              {language === 'ar' ? 'مرّر للأسفل لإكمال الصفحة ↓' : language === 'en' ? 'Scroll down to finish the page ↓' : 'Faites défiler pour finir la page ↓'}
+            </span>
           </div>
         )}
       </main>
