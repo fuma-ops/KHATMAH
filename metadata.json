@@ -1,0 +1,6 @@
+{
+  "name": "Al-Khatma Al-Khamsiyya - Fast Quran Reader & Summary",
+  "description": "Authentic Quran reader structured in 5 condensed, legible pages per Juz (30 Juz = 150 pages) with verified Arabic text, verse explanations, and Khatma speed tracking.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
