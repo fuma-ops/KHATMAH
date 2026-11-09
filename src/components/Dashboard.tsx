@@ -19,7 +19,7 @@ import { AppLanguage } from '../utils/translations';
 
 // Import the generated clean high-fidelity assets (no baked-in UI or text)
 import sacredQuranHeroImg from '../assets/images/sacred_quran_sunset_hero_1794224314300.webp';
-import royalEmblemImg from '../assets/images/khatmati_royal_emblem_1794224335265.webp';
+import royalEmblemImg from '../assets/images/khatmah_logo.webp';
 import quranRehalImg from '../assets/images/quran_rehal_card_1794223662097.webp';
 import plannerQuillImg from '../assets/images/planner_quill_card_1794223680272.webp';
 import booksBookmarkImg from '../assets/images/books_bookmark_card_1794223697975.webp';
@@ -216,11 +216,11 @@ export const Dashboard: React.FC<DashboardProps> = ({
           {/* Central Imperial Emblem & Brand in High-Contrast Frosted Glass Pod */}
           <div className="mt-3 sm:mt-5 text-center flex flex-col items-center backdrop-blur-xl bg-[#FFFDF9]/85 dark:bg-stone-900/85 px-7 sm:px-12 py-5 sm:py-6 rounded-3xl border border-amber-300/70 dark:border-amber-500/40 shadow-lg max-w-lg">
             {/* 3D Royal Gold & Emerald Medallion Icon */}
-            <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full shadow-xl p-0.5 bg-gradient-to-b from-amber-300 via-amber-500 to-amber-700 mb-2 hover:scale-105 transition-transform duration-300">
+            <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl shadow-xl mb-2 hover:scale-105 transition-transform duration-300">
               <img 
                 src={royalEmblemImg} 
-                alt="Khatmah Royal Emblem" 
-                className="w-full h-full object-cover rounded-full shadow-inner"
+                alt="Logo Khatmah" 
+                className="w-full h-full object-cover rounded-2xl"
               />
             </div>
 

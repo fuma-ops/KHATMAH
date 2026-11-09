@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { Header } from './components/Header';
 import { Dashboard } from './components/Dashboard';
-import royalEmblemImg from './assets/images/khatmati_royal_emblem_1794224335265.webp';
+import royalEmblemImg from './assets/images/khatmah_logo.webp';
 import { KhatmaSelector } from './components/KhatmaSelector';
 import { QuranReader } from './components/QuranReader';
 import { ReadingHistory } from './components/ReadingHistory';
@@ -460,11 +460,11 @@ export default function App() {
             onClick={() => setCurrentTab('home')}
             className="flex flex-col items-center text-center group focus:outline-none"
           >
-            <div className="w-14 h-14 rounded-full p-0.5 bg-gradient-to-b from-amber-300 via-amber-500 to-amber-700 shadow-md mb-2 group-hover:scale-105 transition-transform duration-300">
+            <div className="w-14 h-14 rounded-2xl shadow-md mb-2 group-hover:scale-105 transition-transform duration-300">
               <img 
                 src={royalEmblemImg} 
-                alt="Emblème Khatmah" 
-                className="w-full h-full object-cover rounded-full"
+                alt="Logo Khatmah" 
+                className="w-full h-full object-cover rounded-2xl"
               />
             </div>
             <span className="text-3xl font-bold font-['Reem_Kufi','Amiri',serif] text-stone-900 dark:text-stone-100">ختمة</span>

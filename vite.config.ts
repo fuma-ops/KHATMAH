@@ -11,7 +11,7 @@ export default defineConfig(() => {
       tailwindcss(),
       VitePWA({
         registerType: 'autoUpdate',
-        includeAssets: ['icon.svg', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png'],
+        includeAssets: ['favicon-48.png', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png'],
         manifest: {
           id: '/',
           name: 'KHATMAH (ختمة) — Complete Quran, 5 pages per Juz',
@@ -25,8 +25,7 @@ export default defineConfig(() => {
           icons: [
             { src: '/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
             { src: '/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
-            { src: '/icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
-            { src: '/icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' }
+            { src: '/icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' }
           ]
         },
         workbox: {
