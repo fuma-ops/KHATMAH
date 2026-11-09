@@ -30,7 +30,7 @@ export const KHATMA_PLANS_CONFIG: KhatmaPlanConfig[] = [
     durationDays: 3,
     nameKey: '3 Days',
     dailyPages: 50,
-    juzPerDayDesc: '10 Juz / day (50 pages)',
+    juzPerDayDesc: '10 Juz / jour (50 pages)',
     schedule: generateBalancedSchedule(3) // [50, 50, 50]
   },
   {
@@ -38,7 +38,7 @@ export const KHATMA_PLANS_CONFIG: KhatmaPlanConfig[] = [
     durationDays: 5,
     nameKey: '5 Days',
     dailyPages: 30,
-    juzPerDayDesc: '6 Juz / day (30 pages)',
+    juzPerDayDesc: '6 Juz / jour (30 pages)',
     schedule: generateBalancedSchedule(5) // [30, 30, 30, 30, 30]
   },
   {
@@ -46,7 +46,7 @@ export const KHATMA_PLANS_CONFIG: KhatmaPlanConfig[] = [
     durationDays: 7,
     nameKey: '7 Days',
     dailyPages: 21,
-    juzPerDayDesc: '4.3 Juz / day (21–22 pages)',
+    juzPerDayDesc: '4.3 Juz / jour (21–22 pages)',
     schedule: generateBalancedSchedule(7) // [22, 22, 22, 21, 21, 21, 21] sum = 150
   },
   {
@@ -54,7 +54,7 @@ export const KHATMA_PLANS_CONFIG: KhatmaPlanConfig[] = [
     durationDays: 9,
     nameKey: '9 Days',
     dailyPages: 17,
-    juzPerDayDesc: '3.3 Juz / day (16–17 pages)',
+    juzPerDayDesc: '3.3 Juz / jour (16–17 pages)',
     schedule: generateBalancedSchedule(9) // [17, 17, 17, 17, 17, 17, 16, 16, 16] sum = 150
   },
   {
@@ -62,7 +62,7 @@ export const KHATMA_PLANS_CONFIG: KhatmaPlanConfig[] = [
     durationDays: 15,
     nameKey: '15 Days',
     dailyPages: 10,
-    juzPerDayDesc: '2 Juz / day (10 pages)',
+    juzPerDayDesc: '2 Juz / jour (10 pages)',
     schedule: generateBalancedSchedule(15) // 15 * 10 = 150
   },
   {
@@ -70,7 +70,7 @@ export const KHATMA_PLANS_CONFIG: KhatmaPlanConfig[] = [
     durationDays: 30,
     nameKey: '30 Days',
     dailyPages: 5,
-    juzPerDayDesc: '1 Juz / day (5 pages)',
+    juzPerDayDesc: '1 Juz / jour (5 pages)',
     schedule: generateBalancedSchedule(30) // 30 * 5 = 150
   }
 ];
@@ -132,6 +132,8 @@ export interface KhatmaState {
   completedWirds?: CompletedWirdRecord[];
   pastKhatmas?: PastKhatmaRecord[];
   celebratedWirds?: string[]; // array of wird identifiers (e.g. "wird-1", "wird-2")
+  // Signet de reprise : le verset où l'on s'est arrêté au milieu d'une page.
+  resumeMarker?: { juz: number; page: number; verseKey: string; savedAt: string } | null;
   lastReadDate: string;
   bookmarks: {
     juz: number;

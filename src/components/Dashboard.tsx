@@ -60,7 +60,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
     io.observe(el);
     return () => io.disconnect();
   }, []);
-  const ctaLabel = language === 'ar' ? 'متابعة القراءة' : language === 'en' ? 'Continue reading' : 'Continuer la lecture';
+  const marker = khatma.resumeMarker;
+  const ctaLabel = marker
+    ? (language === 'ar' ? `أكمل من علامتك (${marker.verseKey})` : language === 'en' ? `Resume at my bookmark (${marker.verseKey})` : `Reprendre à mon signet (${marker.verseKey})`)
+    : (language === 'ar' ? 'متابعة القراءة' : language === 'en' ? 'Continue reading' : 'Continuer la lecture');
 
   const totalCompleted = khatma.completedPages.length;
   const overallPercentage = Math.round((totalCompleted / 150) * 100);

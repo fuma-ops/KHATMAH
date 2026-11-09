@@ -150,7 +150,7 @@ export default function App() {
       ...prev,
       hasStarted: true,
       startDateTime: prev.hasStarted && prev.startDateTime ? prev.startDateTime : nowIso,
-      startDate: prev.hasStarted ? prev.startDate : nowIso.split('T')[0],
+      startDate: prev.hasStarted ? prev.startDate : todayISO(),
       currentPosition: { juz: targetJuz, page: targetPage }
     }));
     setStartWirdOverlay(prev => ({ ...prev, isOpen: false }));
@@ -244,7 +244,8 @@ export default function App() {
     if (!exists) {
       for (const dayItem of scheduleBreakdown) {
         const isWirdFullyFinished = dayItem.pageKeys.every(k => newCompleted.includes(k));
-        const wirdTag = `wird-${dayItem.dayNumber}`;
+        // Clé par plan : changer de plan ne doit pas empêcher la célébration du jour.
+        const wirdTag = `wird-${khatma.durationDays}-${dayItem.dayNumber}`;
 
         if (isWirdFullyFinished && !newCelebratedWirds.includes(wirdTag)) {
           newCelebratedWirds.push(wirdTag);
@@ -322,8 +323,27 @@ export default function App() {
       readingSessions: newSessions,
       completedWirds: newCompletedWirds,
       celebratedWirds: newCelebratedWirds,
+      // Page terminée : le signet posé sur cette page n'a plus lieu d'être.
+      resumeMarker: !exists && prev.resumeMarker && prev.resumeMarker.juz === juz && prev.resumeMarker.page === page ? null : prev.resumeMarker,
       lastReadDate: todayStr
     }));
+  };
+
+  // Signet de reprise (milieu de page) : un seul à la fois ; retoucher le même verset l'enlève.
+  const handleToggleResumeMarker = (verseKey: string) => {
+    setKhatma(prev => {
+      const same = prev.resumeMarker?.verseKey === verseKey;
+      return {
+        ...prev,
+        hasStarted: true,
+        resumeMarker: same ? null : {
+          juz: prev.currentPosition.juz,
+          page: prev.currentPosition.page,
+          verseKey,
+          savedAt: new Date().toISOString()
+        }
+      };
+    });
   };
 
   const handleNavigatePage = (juz: number, page: number) => {
@@ -390,6 +410,61 @@ export default function App() {
   }, [currentTab, khatma.currentPosition.juz, khatma.currentPosition.page]);
 
   // When reading the Quran, render the dedicated distraction-free reading canvas
+  // Fenêtres communes à l'accueil ET à l'écran de lecture : célébration du jour, dua de fin de
+  // Khatma et ouverture du wird (on termine souvent sa dernière page dans le lecteur).
+  const sharedModals = (
+    <>
+      <DuaModal
+        isOpen={isDuaOpen}
+        onClose={() => setIsDuaOpen(false)}
+      />
+
+      <DailyWirdCelebrationModal
+        isOpen={isDailyCelebrationOpen}
+        onClose={() => setIsDailyCelebrationOpen(false)}
+        onContinueReading={() => {
+          setIsDailyCelebrationOpen(false);
+          setCurrentTab('quran');
+        }}
+        onGoHome={() => {
+          setIsDailyCelebrationOpen(false);
+          setCurrentTab('home');
+        }}
+        language={language}
+        khatma={khatma}
+        pagesReadToday={celebratedPagesCount || (khatma.dailyLog[todayISO()] || 1)}
+        wirdNumber={celebratedWirdNumber}
+        onStartNextWird={(nextWirdNum) => {
+          setIsDailyCelebrationOpen(false);
+          const schedule = getPlanScheduleBreakdown(khatma.durationDays);
+          const dayItem = schedule.find(d => d.dayNumber === nextWirdNum) || schedule[0];
+          handleOpenStartWirdOverlay(
+            nextWirdNum,
+            dayItem.startJuz,
+            dayItem.startPage,
+            language === 'ar' ? dayItem.surahRangeAr : dayItem.surahRangeFr,
+            language === 'ar' ? dayItem.juzLabelAr : dayItem.juzLabelFr
+          );
+        }}
+      />
+
+      <StartWirdOverlayModal
+        isOpen={startWirdOverlay.isOpen}
+        onClose={() => setStartWirdOverlay(prev => ({ ...prev, isOpen: false }))}
+        onConfirmStart={handleConfirmStartWird}
+        language={language}
+        khatmaNumber={khatma.khatmaNumber || 1}
+        durationDays={khatma.durationDays}
+        wirdNumber={startWirdOverlay.wirdNumber}
+        targetJuz={startWirdOverlay.targetJuz}
+        targetPage={startWirdOverlay.targetPage}
+        surahRange={startWirdOverlay.surahRange}
+        juzLabel={startWirdOverlay.juzLabel}
+      />
+
+    </>
+  );
+
   if (currentTab === 'quran') {
     const isCurrentPageCompleted = khatma.completedPages.includes(
       `${khatma.currentPosition.juz}-${khatma.currentPosition.page}`
@@ -412,6 +487,11 @@ export default function App() {
           onToggleComplete={handleToggleCompletePage}
           onToggleBookmark={handleToggleBookmark}
           onUpdateFontSize={(fontSize) => setSettings(s => ({ ...s, fontSize }))}
+          resumeVerseKey={
+            khatma.resumeMarker && khatma.resumeMarker.juz === khatma.currentPosition.juz && khatma.resumeMarker.page === khatma.currentPosition.page
+              ? khatma.resumeMarker.verseKey
+              : undefined
+          }
           onSelectVerseForDetails={(verseKey, textArabic, surahNum, verseNum, audioUrl) => {
             setVerseModal({
               isOpen: true,
@@ -434,7 +514,14 @@ export default function App() {
           language={language}
           audioUrl={verseModal.audioUrl}
           onPlayAudio={handlePlayAudio}
+          isResumeMarker={!!verseModal.verseKey && khatma.resumeMarker?.verseKey === verseModal.verseKey}
+          onToggleResumeMarker={() => {
+            if (verseModal.verseKey) handleToggleResumeMarker(verseModal.verseKey);
+            setVerseModal(m => ({ ...m, isOpen: false }));
+          }}
         />
+
+        {sharedModals}
 
         <OfflineIndicator language={language} />
       </>
@@ -579,6 +666,9 @@ export default function App() {
                 if (!khatma.hasStarted) {
                   handleOpenStartWirdOverlay(1, 1, 1);
                 } else {
+                  // Reprendre au signet s'il y en a un.
+                  const m = khatma.resumeMarker;
+                  if (m) setKhatma(prev => ({ ...prev, currentPosition: { juz: m.juz, page: m.page } }));
                   setCurrentTab('quran');
                 }
               }}
@@ -713,11 +803,6 @@ export default function App() {
         onResetSettings={() => setSettings(DEFAULT_SETTINGS)}
       />
 
-      <DuaModal
-        isOpen={isDuaOpen}
-        onClose={() => setIsDuaOpen(false)}
-      />
-
       <KhatmaScheduleModal
         isOpen={isScheduleModalOpen}
         onClose={() => setIsScheduleModalOpen(false)}
@@ -737,48 +822,7 @@ export default function App() {
         }}
       />
 
-      <DailyWirdCelebrationModal
-        isOpen={isDailyCelebrationOpen}
-        onClose={() => setIsDailyCelebrationOpen(false)}
-        onContinueReading={() => {
-          setIsDailyCelebrationOpen(false);
-          setCurrentTab('quran');
-        }}
-        onGoHome={() => {
-          setIsDailyCelebrationOpen(false);
-          setCurrentTab('home');
-        }}
-        language={language}
-        khatma={khatma}
-        pagesReadToday={celebratedPagesCount || (khatma.dailyLog[todayISO()] || 1)}
-        wirdNumber={celebratedWirdNumber}
-        onStartNextWird={(nextWirdNum) => {
-          setIsDailyCelebrationOpen(false);
-          const schedule = getPlanScheduleBreakdown(khatma.durationDays);
-          const dayItem = schedule.find(d => d.dayNumber === nextWirdNum) || schedule[0];
-          handleOpenStartWirdOverlay(
-            nextWirdNum,
-            dayItem.startJuz,
-            dayItem.startPage,
-            language === 'ar' ? dayItem.surahRangeAr : dayItem.surahRangeFr,
-            language === 'ar' ? dayItem.juzLabelAr : dayItem.juzLabelFr
-          );
-        }}
-      />
-
-      <StartWirdOverlayModal
-        isOpen={startWirdOverlay.isOpen}
-        onClose={() => setStartWirdOverlay(prev => ({ ...prev, isOpen: false }))}
-        onConfirmStart={handleConfirmStartWird}
-        language={language}
-        khatmaNumber={khatma.khatmaNumber || 1}
-        durationDays={khatma.durationDays}
-        wirdNumber={startWirdOverlay.wirdNumber}
-        targetJuz={startWirdOverlay.targetJuz}
-        targetPage={startWirdOverlay.targetPage}
-        surahRange={startWirdOverlay.surahRange}
-        juzLabel={startWirdOverlay.juzLabel}
-      />
+      {sharedModals}
 
       <OfflineIndicator language={language} />
     </div>

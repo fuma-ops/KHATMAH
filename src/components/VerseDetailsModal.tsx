@@ -16,6 +16,8 @@ interface VerseDetailsModalProps {
   language: AppLanguage;
   audioUrl?: string;
   onPlayAudio?: (url: string) => void;
+  isResumeMarker?: boolean;
+  onToggleResumeMarker?: () => void;
 }
 
 export const VerseDetailsModal: React.FC<VerseDetailsModalProps> = ({
@@ -27,16 +29,17 @@ export const VerseDetailsModal: React.FC<VerseDetailsModalProps> = ({
   verseNumber,
   language,
   audioUrl,
-  onPlayAudio
+  onPlayAudio,
+  isResumeMarker,
+  onToggleResumeMarker
 }) => {
-  if (!isOpen || !verseKey) return null;
-
   const t = TRANSLATIONS[language];
   const [activeTab, setActiveTab] = useState<'tafsir' | 'asbab'>('tafsir');
   const [details, setDetails] = useState<VerseTafsirDetails | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
+    if (!isOpen || !verseKey) return;
     let cancelled = false;
     setLoading(true);
     getVerseDetails(verseKey, arabicText, surahNumber, verseNumber, language)
@@ -53,7 +56,10 @@ export const VerseDetailsModal: React.FC<VerseDetailsModalProps> = ({
     return () => {
       cancelled = true;
     };
-  }, [verseKey, language, arabicText, surahNumber, verseNumber]);
+  }, [isOpen, verseKey, language, arabicText, surahNumber, verseNumber]);
+
+  // Après les hooks (règle de React) : rien à afficher quand la fiche est fermée.
+  if (!isOpen || !verseKey) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-xs transition-opacity animate-in fade-in">
@@ -142,6 +148,27 @@ export const VerseDetailsModal: React.FC<VerseDetailsModalProps> = ({
             </>
           );
         })()}
+
+        {/* Signet de reprise : s'arrêter à ce verset et y revenir la prochaine fois */}
+        {onToggleResumeMarker && (
+          <div className="px-4 pt-3">
+            <button
+              onClick={onToggleResumeMarker}
+              className={`w-full py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 active:scale-95 transition-colors ${
+                isResumeMarker
+                  ? 'bg-amber-100 text-amber-900 border border-amber-300 dark:bg-amber-900/30 dark:text-amber-200'
+                  : 'bg-emerald-800 text-white hover:bg-emerald-700 shadow-sm'
+              }`}
+            >
+              <span aria-hidden>🔖</span>
+              <span>
+                {isResumeMarker
+                  ? (language === 'ar' ? 'إزالة علامة التوقف' : language === 'en' ? 'Remove my bookmark here' : 'Retirer mon signet ici')
+                  : (language === 'ar' ? 'توقفتُ هنا — أكمل من هذه الآية لاحقاً' : language === 'en' ? 'I stopped here — continue from this verse next time' : "Je m'arrête ici — reprendre à ce verset")}
+              </span>
+            </button>
+          </div>
+        )}
 
         {/* Tab Navigation */}
         <div className="flex items-center gap-1 p-2 border-b border-stone-200 dark:border-stone-800 bg-white/40 dark:bg-stone-900/60 overflow-x-auto text-xs font-medium">

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   X, 
   Calendar, 
@@ -32,6 +32,10 @@ export const KhatmaScheduleModal: React.FC<KhatmaScheduleModalProps> = ({
 }) => {
   const isRtl = language === 'ar';
   const [selectedDuration, setSelectedDuration] = useState<3 | 5 | 7 | 9 | 15 | 30>(khatma.durationDays);
+  // Toujours afficher le plan choisi : la fenêtre reste montée, il faut donc suivre la sélection.
+  useEffect(() => {
+    if (isOpen) setSelectedDuration(khatma.durationDays);
+  }, [isOpen, khatma.durationDays]);
 
   if (!isOpen) return null;
 

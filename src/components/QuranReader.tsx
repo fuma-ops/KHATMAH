@@ -36,6 +36,8 @@ interface QuranReaderProps {
   onToggleBookmark: (juz: number, page: number) => void;
   onUpdateFontSize: (size: number) => void;
   onSelectVerseForDetails: (verseKey: string, textArabic: string, surahNum: number, verseNum: number, audioUrl?: string) => void;
+  /** Verset du signet de reprise sur cette page (s'il y en a un). */
+  resumeVerseKey?: string;
 }
 
 export const QuranReader: React.FC<QuranReaderProps> = ({
@@ -50,7 +52,8 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
   onToggleComplete,
   onToggleBookmark,
   onUpdateFontSize,
-  onSelectVerseForDetails
+  onSelectVerseForDetails,
+  resumeVerseKey
 }) => {
   const t = TRANSLATIONS[language];
   const isRtl = language === 'ar';
@@ -74,6 +77,17 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
   const [loadError, setLoadError] = useState<boolean>(false);
   const [retryTick, setRetryTick] = useState<number>(0);
   const refitTries = useRef<number>(0);
+  // Signet de reprise : on amène le verset à l'écran et on le fait briller quelques secondes.
+  const [resumeGlow, setResumeGlow] = useState<boolean>(false);
+  useEffect(() => {
+    if (loading || !resumeVerseKey) return;
+    const el = contentRef.current?.querySelector(`[data-vk="${resumeVerseKey}"]`) as HTMLElement | null;
+    if (!el) return;
+    el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    setResumeGlow(true);
+    const t = setTimeout(() => setResumeGlow(false), 4000);
+    return () => clearTimeout(t);
+  }, [loading, resumeVerseKey, juzNumber, pageIndex]);
   useEffect(() => { refitTries.current = 0; }, [juzNumber, pageIndex, settings.fontSize]);
   // Vraies pages du mushaf de Médine couvertes par cette page condensée (ex. « 22–25 »).
   const mushafRange = fullPages.length
@@ -233,7 +247,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
         clearTimeout(t6);
       };
     }
-  }, [loading, fullPages, autoFitEnabled, recalculateFontSize]);
+  }, [loading, fullPages, autoFitEnabled, recalculateFontSize, resumeVerseKey]);
 
   // Garde-fou final, après chaque rendu : si la fin du texte dépasse le bas de l'écran,
   // on active le défilement. Aucun verset ne doit jamais être masqué.
@@ -666,7 +680,15 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                       )}
 
                       {/* Pure Noble Verse: Crisp typography, subtle golden ayah markers */}
+                      {resumeVerseKey === verse.verseKey && (
+                        <span
+                          className="inline-block align-middle mx-0.5 text-[0.9em] select-none"
+                          title={language === 'ar' ? 'علامة التوقف' : language === 'en' ? 'Your bookmark' : 'Votre signet'}
+                          aria-label="signet"
+                        >🔖</span>
+                      )}
                       <span
+                        data-vk={verse.verseKey}
                         onClick={() => {
                           if (visualMode === 'focus') {
                             setFocusedVerseKey(verse.verseKey);
@@ -676,6 +698,8 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                         className={`cursor-pointer rounded-sm px-0.5 transition-colors inline ${
                           isVersePlaying 
                             ? 'bg-amber-300/50 dark:bg-amber-900/40 font-bold' 
+                            : resumeVerseKey === verse.verseKey
+                            ? `bg-amber-200/60 dark:bg-amber-900/40 ring-1 ring-amber-500/60 ${resumeGlow ? 'animate-pulse' : ''}`
                             : isFocused
                             ? 'bg-amber-200/40 dark:bg-amber-950/50 ring-1 ring-amber-400/40'
                             : 'hover:bg-amber-100/30 dark:hover:bg-white/5'
