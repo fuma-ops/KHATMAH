@@ -359,6 +359,26 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isRtl, handlePrev, handleNext]);
 
+  // Balayage du doigt pour changer de page, comme dans un mushaf : glisser vers la droite = page
+  // suivante, vers la gauche = page précédente. Un geste surtout vertical reste un défilement.
+  const swipeStart = useRef<{ x: number; y: number; t: number } | null>(null);
+  const onSwipeStart = (e: React.TouchEvent) => {
+    const tch = e.touches[0];
+    swipeStart.current = e.touches.length === 1 ? { x: tch.clientX, y: tch.clientY, t: Date.now() } : null;
+  };
+  const onSwipeEnd = (e: React.TouchEvent) => {
+    const st = swipeStart.current;
+    swipeStart.current = null;
+    if (!st) return;
+    const tch = e.changedTouches[0];
+    const dx = tch.clientX - st.x;
+    const dy = tch.clientY - st.y;
+    if (Date.now() - st.t > 800 || Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+    if (window.getSelection()?.toString()) return; // sélection de texte en cours
+    if (dx > 0) handleNext();
+    else handlePrev();
+  };
+
   const handleToggleCompleteWithConfetti = () => {
     const willBeCompleted = !isCompleted;
     onToggleComplete(juzNumber, pageIndex);
@@ -625,6 +645,8 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
         onClick={() => {
           if (isGuideMenuOpen) setIsGuideMenuOpen(false);
         }}
+        onTouchStart={onSwipeStart}
+        onTouchEnd={onSwipeEnd}
         className={`flex-1 w-full max-w-4xl lg:max-w-5xl xl:max-w-6xl mx-auto px-3 sm:px-6 md:px-8 pt-3 sm:pt-4 pb-3 sm:pb-5 flex flex-col justify-start items-center relative ${
           autoFitEnabled && !overflowing ? 'overflow-hidden' : 'overflow-y-auto scrollbar-none'
         }`}
