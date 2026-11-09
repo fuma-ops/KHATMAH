@@ -5,10 +5,11 @@ import { DUA_KHATM_AL_QURAN } from '../data/duaKhatm';
 
 interface DuaModalProps {
   isOpen: boolean;
+  language?: 'ar' | 'fr' | 'en';
   onClose: () => void;
 }
 
-export const DuaModal: React.FC<DuaModalProps> = ({ isOpen, onClose }) => {
+export const DuaModal: React.FC<DuaModalProps> = ({ isOpen, onClose, language = 'fr' }) => {
   useEffect(() => {
     if (isOpen) {
       confetti({
@@ -36,14 +37,18 @@ export const DuaModal: React.FC<DuaModalProps> = ({ isOpen, onClose }) => {
 
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-200/60 dark:bg-amber-900/40 text-amber-900 dark:text-amber-300 mb-2">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Félicitations pour l'achèvement du Coran</span>
+            <span>{language === 'ar' ? 'مبارك ختم القرآن الكريم 🎉' : language === 'en' ? 'Congratulations on completing the Quran 🎉' : "Félicitations, vous avez terminé le Coran 🎉"}</span>
           </div>
 
           <h3 className="font-arabic text-2xl sm:text-3xl font-bold text-emerald-950 dark:text-emerald-300">
             دُعَاءُ خَتْمِ القُرْآنِ الكَرِيمِ
           </h3>
           <p className="text-xs text-stone-600 dark:text-stone-400 mt-1">
-            Invocation authentique de clôture du Saint Coran
+            {language === 'ar'
+              ? 'أدعية يُستحب الدعاء بها عند ختم القرآن (ليس فيها دعاء مخصوص ثابت عن النبي ﷺ)'
+              : language === 'en'
+              ? 'Supplications commonly made upon completing the Quran (no specific wording is authentically reported from the Prophet ﷺ)'
+              : "Invocations d'usage à la fin du Coran (aucune formule précise n'est authentiquement rapportée du Prophète ﷺ)"}
           </p>
         </div>
 

@@ -408,7 +408,11 @@ export const ReadingHistory: React.FC<ReadingHistoryProps> = ({
 
         {khatma.bookmarks.length === 0 ? (
           <p className="text-xs text-stone-400 italic">
-            Aucun signet enregistré pour l'instant. Utilisez l'icône de signet pendant votre lecture.
+            {language === 'ar'
+              ? 'لا توجد علامات بعد. اضغط على أيقونة 🔖 أعلى صفحة القراءة لحفظ الصفحة هنا.'
+              : language === 'en'
+              ? 'No bookmarks yet. Tap the 🔖 icon at the top of the reader to save a page here.'
+              : "Aucun signet pour l'instant. Touchez l'icône 🔖 en haut du lecteur pour garder la page ici."}
           </p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

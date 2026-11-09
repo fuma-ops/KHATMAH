@@ -417,6 +417,7 @@ export default function App() {
       <DuaModal
         isOpen={isDuaOpen}
         onClose={() => setIsDuaOpen(false)}
+        language={language}
       />
 
       <DailyWirdCelebrationModal

@@ -40,6 +40,9 @@ interface QuranReaderProps {
   resumeVerseKey?: string;
 }
 
+// Temps minimal sur une page pour qu'elle soit comptée automatiquement en passant à la suivante.
+const AUTO_READ_MS = 60_000;
+
 export const QuranReader: React.FC<QuranReaderProps> = ({
   juzNumber,
   pageIndex,
@@ -77,6 +80,16 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
   const [loadError, setLoadError] = useState<boolean>(false);
   const [retryTick, setRetryTick] = useState<number>(0);
   const refitTries = useRef<number>(0);
+  // Heure d'arrivée sur la page (pour la validation automatique) + petit message éphémère.
+  const pageEnteredAt = useRef<number>(Date.now());
+  useEffect(() => { pageEnteredAt.current = Date.now(); }, [juzNumber, pageIndex]);
+  const [toast, setToast] = useState<string>('');
+  const toastTimer = useRef<number | undefined>(undefined);
+  const showToast = (msg: string) => {
+    setToast(msg);
+    window.clearTimeout(toastTimer.current);
+    toastTimer.current = window.setTimeout(() => setToast(''), 2600);
+  };
   // Signet de reprise : on amène le verset à l'écran et on le fait briller quelques secondes.
   const [resumeGlow, setResumeGlow] = useState<boolean>(false);
   useEffect(() => {
@@ -311,14 +324,25 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
     }
   }, [juzNumber, pageIndex, onNavigatePage]);
 
+  // Validation automatique : passer à la page suivante après au moins 1 minute de lecture
+  // compte la page comme lue (sans toucher ✓). En dessous, on considère qu'on feuillette.
   const handleNext = useCallback(() => {
     setAutoFitEnabled(true);
+    const isLast = juzNumber === 30 && pageIndex === 5;
+    const readLongEnough = Date.now() - pageEnteredAt.current >= AUTO_READ_MS;
+    if (!isCompleted && (readLongEnough || isLast)) {
+      onToggleComplete(juzNumber, pageIndex);
+      if (!isLast) showToast(language === 'ar' ? '✓ سُجّلت الصفحة تلقائياً' : language === 'en' ? '✓ Page saved automatically' : '✓ Page enregistrée automatiquement');
+    } else if (!isCompleted && !isLast) {
+      showToast(language === 'ar' ? 'لم تُحتسب الصفحة (أقل من دقيقة) — اضغط ✓ إن قرأتها' : language === 'en' ? 'Page not counted (under 1 min) — tap ✓ if you read it' : 'Page non comptée (moins d\'1 min) — touchez ✓ si vous l\'avez lue');
+    }
+    if (isLast) return;
     if (pageIndex < 5) {
       onNavigatePage(juzNumber, pageIndex + 1);
     } else if (juzNumber < 30) {
       onNavigatePage(juzNumber + 1, 1);
     }
-  }, [juzNumber, pageIndex, onNavigatePage]);
+  }, [juzNumber, pageIndex, onNavigatePage, isCompleted, onToggleComplete, language]);
 
   // Keyboard navigation support
   useEffect(() => {
@@ -366,7 +390,8 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
     : 'bg-[#FAF8F5] text-[#1c1917]';
 
   const isPrevDisabled = juzNumber === 1 && pageIndex === 1;
-  const isNextDisabled = juzNumber === 30 && pageIndex === 5;
+  // Dernière page : le bouton « suivant » termine la Khatma (puis dua de fin de Khatma).
+  const isNextDisabled = juzNumber === 30 && pageIndex === 5 && isCompleted;
   const isDark = settings.theme === 'dark';
 
   return (
@@ -735,6 +760,11 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
           </div>
         )}
       </main>
+      {toast && (
+        <div className="fixed left-1/2 -translate-x-1/2 bottom-6 z-50 px-4 py-2 rounded-full bg-emerald-900 text-amber-100 text-xs font-semibold shadow-lg max-w-[90vw] text-center pointer-events-none">
+          {toast}
+        </div>
+      )}
     </div>
   );
 };
