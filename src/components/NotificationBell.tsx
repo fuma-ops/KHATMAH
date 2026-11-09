@@ -1,13 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Bell, BellRing, BookOpen, X } from 'lucide-react';
+import { Bell, BookOpen, X } from 'lucide-react';
 import { AppLanguage } from '../utils/translations';
 import { KhatmaState, getTodaysAssignedTarget } from '../services/khatmaService';
 import { getPlanScheduleBreakdown } from '../services/khatmaScheduleHelper';
 import { localDateISO } from '../utils/localDate';
-import {
-  readReminder, enableReminder, disableReminder, updateReminderTime, notificationsSupported, pushServerConfigured,
-} from '../services/reminders';
 
 interface Props {
   khatma: KhatmaState;
@@ -33,42 +30,18 @@ export function todayStatus(khatma: KhatmaState) {
 }
 
 const T = {
-  fr: { title: 'Votre wird du jour', left: (r: number, t: number) => `Il reste ${r} page${r > 1 ? 's' : ''} sur ${t} aujourd'hui`, done: '✅ Wird du jour terminé — qu\'Allah l\'accepte !', notStarted: 'Choisissez un plan et commencez votre Khatma.', streak: (n: number) => `🔥 ${n} jour${n > 1 ? 's' : ''} d'affilée`, read: 'Lire maintenant', reminder: 'Rappel quotidien', at: 'à', on: 'Activer', off: 'Désactiver', pushOk: 'Notifications activées sur ce téléphone.', localOk: "Rappel activé (s'affiche quand l'app est ouverte ou en arrière-plan).", denied: 'Notifications refusées : autorisez-les dans les réglages du téléphone.', unsupported: "Ce navigateur ne gère pas les notifications. Installez l'app (bouton Télécharger l'app).", ios: "Sur iPhone : installez d'abord l'app sur l'écran d'accueil, puis activez le rappel depuis l'app." },
-  ar: { title: 'وردك اليومي', left: (r: number, t: number) => `بقيت ${r} صفحة من ${t} اليوم`, done: '✅ أتممت ورد اليوم — تقبّل الله منك!', notStarted: 'اختر خطة وابدأ ختمتك.', streak: (n: number) => `🔥 ${n} يوم متتالٍ`, read: 'اقرأ الآن', reminder: 'تذكير يومي', at: 'على الساعة', on: 'تفعيل', off: 'إيقاف', pushOk: 'تم تفعيل الإشعارات على هذا الهاتف.', localOk: 'تم تفعيل التذكير (يظهر عندما يكون التطبيق مفتوحاً).', denied: 'الإشعارات مرفوضة: فعّلها من إعدادات الهاتف.', unsupported: 'هذا المتصفح لا يدعم الإشعارات. ثبّت التطبيق أولاً.', ios: 'على آيفون: ثبّت التطبيق على الشاشة الرئيسية أولاً، ثم فعّل التذكير من داخله.' },
-  en: { title: "Today's wird", left: (r: number, t: number) => `${r} of ${t} page${t > 1 ? 's' : ''} left today`, done: "✅ Today's wird completed — may Allah accept it!", notStarted: 'Choose a plan and start your Khatma.', streak: (n: number) => `🔥 ${n}-day streak`, read: 'Read now', reminder: 'Daily reminder', at: 'at', on: 'Turn on', off: 'Turn off', pushOk: 'Notifications are on for this phone.', localOk: 'Reminder on (shown while the app is open or in the background).', denied: 'Notifications blocked: allow them in your phone settings.', unsupported: "This browser doesn't support notifications. Install the app first.", ios: 'On iPhone: add the app to your Home Screen first, then turn on the reminder from the app.' },
+  fr: { title: 'Votre wird du jour', left: (r: number, t: number) => `Il reste ${r} page${r > 1 ? 's' : ''} sur ${t} aujourd'hui`, done: '✅ Wird du jour terminé — qu\'Allah l\'accepte !', notStarted: 'Choisissez un plan et commencez votre Khatma.', streak: (n: number) => `🔥 ${n} jour${n > 1 ? 's' : ''} d'affilée`, read: 'Lire maintenant' },
+  ar: { title: 'وردك اليومي', left: (r: number, t: number) => `بقيت ${r} صفحة من ${t} اليوم`, done: '✅ أتممت ورد اليوم — تقبّل الله منك!', notStarted: 'اختر خطة وابدأ ختمتك.', streak: (n: number) => `🔥 ${n} يوم متتالٍ`, read: 'اقرأ الآن' },
+  en: { title: "Today's wird", left: (r: number, t: number) => `${r} of ${t} page${t > 1 ? 's' : ''} left today`, done: "✅ Today's wird completed — may Allah accept it!", notStarted: 'Choose a plan and start your Khatma.', streak: (n: number) => `🔥 ${n}-day streak`, read: 'Read now' },
 };
 
 export const NotificationBell: React.FC<Props> = ({ khatma, language, onReadNow }) => {
   const t = T[language] || T.fr;
   const isRtl = language === 'ar';
   const [open, setOpen] = useState(false);
-  const [rem, setRem] = useState(readReminder());
-  const [msg, setMsg] = useState('');
-  const [busy, setBusy] = useState(false);
   const st = todayStatus(khatma);
   const streak = readingStreak(khatma.dailyLog || {});
   const badge = khatma.hasStarted && st.remaining > 0 ? st.remaining : 0;
-
-  useEffect(() => { if (open) setRem(readReminder()); }, [open]);
-
-  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-  const standalone = window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone === true;
-
-  const toggle = async () => {
-    setBusy(true);
-    if (rem.enabled) {
-      await disableReminder();
-      setRem({ ...rem, enabled: false });
-      setMsg('');
-    } else if (isIOS && !standalone) {
-      setMsg(t.ios);
-    } else {
-      const r = await enableReminder(rem.time, language);
-      if (r === 'push' || r === 'local') setRem({ ...rem, enabled: true });
-      setMsg(r === 'push' ? t.pushOk : r === 'local' ? t.localOk : r === 'denied' ? t.denied : t.unsupported);
-    }
-    setBusy(false);
-  };
 
   return (
     <div className="relative">
@@ -78,7 +51,7 @@ export const NotificationBell: React.FC<Props> = ({ khatma, language, onReadNow 
         title={t.title}
         aria-label={t.title}
       >
-        {rem.enabled ? <BellRing className="w-4 h-4 text-amber-700 dark:text-amber-400" /> : <Bell className="w-4 h-4 text-amber-700 dark:text-amber-400" />}
+        <Bell className="w-4 h-4 text-amber-700 dark:text-amber-400" />
         {badge > 0 && (
           <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 rounded-full bg-[#064e3b] text-amber-200 text-[10px] font-bold flex items-center justify-center border border-white">
             {badge}
@@ -122,31 +95,6 @@ export const NotificationBell: React.FC<Props> = ({ khatma, language, onReadNow 
               <BookOpen className="w-4 h-4 text-amber-300" /> {t.read}
             </button>
 
-            <div className="mt-4 pt-4 border-t border-black/5 dark:border-white/10">
-              <div className="text-sm font-bold">{t.reminder}</div>
-              <div className="mt-2 flex items-center gap-2">
-                <span className="text-xs text-stone-500">{t.at}</span>
-                <input
-                  type="time"
-                  value={rem.time}
-                  onChange={(e) => { const time = e.target.value || '21:00'; setRem({ ...rem, time }); updateReminderTime(time, language); }}
-                  className="px-2 py-1.5 rounded-lg border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-800 text-sm font-mono"
-                />
-                <button
-                  onClick={toggle}
-                  disabled={busy || !notificationsSupported() && !rem.enabled}
-                  className={`ms-auto px-4 py-2 rounded-xl text-xs font-bold active:scale-95 disabled:opacity-50 ${rem.enabled ? 'bg-stone-200 text-stone-800 dark:bg-stone-700 dark:text-stone-100' : 'bg-amber-400 text-emerald-950'}`}
-                >
-                  {rem.enabled ? t.off : t.on}
-                </button>
-              </div>
-              {(msg || (!notificationsSupported() && !rem.enabled)) && (
-                <p className="mt-2 text-[11px] text-stone-600 dark:text-stone-300 leading-snug">{msg || t.unsupported}</p>
-              )}
-              {!pushServerConfigured() && rem.enabled && !msg && (
-                <p className="mt-2 text-[11px] text-stone-500 leading-snug">{t.localOk}</p>
-              )}
-            </div>
           </div>
         </div>,
         document.body
