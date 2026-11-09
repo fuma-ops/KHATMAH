@@ -10,6 +10,7 @@ import {
   BarChart3,
   CalendarCheck,
   Bell,
+  Settings,
   User,
   Globe,
   X
@@ -26,6 +27,7 @@ import booksBookmarkImg from '../assets/images/books_bookmark_card_1794223697975
 import lanternStudyImg from '../assets/images/lantern_study_card_1794223715621.webp';
 import { PWAInstallButton } from './PWAInstallButton';
 import { todayISO } from '../utils/localDate';
+import { NotificationBell } from './NotificationBell';
 
 interface DashboardProps {
   khatma: KhatmaState;
@@ -88,10 +90,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
         </button>
       )}
       {/* 1. HERO BANNER: Sacred Holy Quran Centerpiece on Carved Rehal at Sunset */}
-      <div className="relative w-full overflow-hidden border-b border-amber-900/10 dark:border-white/5">
+      <div className="relative w-full">
         {/* Sacred Quran Centerpiece Background Artwork */}
         <div 
-          className="absolute inset-0 bg-cover bg-center opacity-75 dark:opacity-35 transition-opacity"
+          className="hero-fade absolute inset-x-0 top-0 h-[150%] bg-cover bg-top opacity-100 dark:opacity-45 transition-opacity pointer-events-none"
           style={{ backgroundImage: `url(${sacredQuranHeroImg})` }}
         />
 
@@ -100,10 +102,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
         <div className="absolute inset-0 bg-amber-950/10 dark:bg-black/40" />
 
         {/* Layer 2: Central luminous radial halo centered right behind the text */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_45%,rgba(255,253,245,0.85)_0%,rgba(255,250,238,0.65)_45%,rgba(250,247,238,0.35)_75%,transparent_100%)] dark:bg-[radial-gradient(ellipse_at_50%_45%,rgba(21,19,17,0.92)_0%,rgba(21,19,17,0.8)_45%,rgba(21,19,17,0.45)_75%,transparent_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_45%,rgba(255,253,245,0.5)_0%,rgba(255,250,238,0.3)_45%,rgba(250,247,238,0.1)_75%,transparent_100%)] dark:bg-[radial-gradient(ellipse_at_50%_45%,rgba(21,19,17,0.92)_0%,rgba(21,19,17,0.8)_45%,rgba(21,19,17,0.45)_75%,transparent_100%)]" />
 
         {/* Layer 3: Smooth top-to-bottom atmospheric fade with backdrop blur */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#FAF7EE]/70 via-[#FAF7EE]/55 to-[#FAF7EE] dark:from-black/80 dark:via-black/70 dark:to-[#151311] backdrop-blur-[1.5px]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#FAF7EE]/25 via-transparent to-transparent dark:from-black/60 dark:via-black/30 dark:to-transparent" />
 
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6 pt-4 pb-14 sm:pb-20 flex flex-col items-center z-10">
           {/* Top Bar on Hero: Language, Notification Bell, User Avatar */}
@@ -172,55 +174,22 @@ export const Dashboard: React.FC<DashboardProps> = ({
               )}
             </div>
 
-            {/* Notification Bell */}
-            <div className="relative">
-              <button
-                onClick={() => setShowNotificationToast(!showNotificationToast)}
-                className="relative w-8 h-8 rounded-full bg-white/95 dark:bg-stone-900/95 backdrop-blur-md border border-amber-300/70 dark:border-stone-700 text-stone-700 dark:text-stone-200 hover:bg-white flex items-center justify-center shadow-xs transition-all"
-                title="Notifications"
-              >
-                <Bell className="w-4 h-4 text-amber-700 dark:text-amber-400" />
-                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#064e3b] text-amber-200 text-[10px] font-bold flex items-center justify-center border border-white dark:border-stone-900 shadow-2xs">
-                  0
-                </span>
-              </button>
+            {/* Cloche : wird du jour, série, rappel quotidien (vraies notifications) */}
+            <NotificationBell khatma={khatma} language={language} onReadNow={onContinueReading} />
 
-              {showNotificationToast && (
-                <div 
-                  className={`absolute top-full mt-2 w-72 p-3.5 bg-white dark:bg-stone-900 rounded-2xl shadow-xl border border-amber-200/80 dark:border-stone-700 text-xs z-50 animate-in fade-in ${
-                    isRtl ? 'left-0' : 'right-0'
-                  }`}
-                >
-                  <div className="flex items-center justify-between font-bold text-stone-900 dark:text-stone-100 pb-1.5 border-b border-black/5 dark:border-white/10">
-                    <span className="flex items-center gap-1.5">
-                      <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-                      <span>{language === 'ar' ? 'تذكير الورد اليومي' : 'Rappel de lecture'}</span>
-                    </span>
-                    <button onClick={() => setShowNotificationToast(false)} className="text-stone-400 hover:text-stone-700">
-                      <X className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                  <p className="mt-2 text-stone-600 dark:text-stone-300 leading-relaxed text-[11px]">
-                    {language === 'ar' 
-                      ? 'حان وقت قراءة وردك اليومي ومواصلة ختمتك المباركة في راحة وسكينة.'
-                      : 'Prenez quelques minutes pour lire vos pages du jour et avancer vers votre Khatma.'}
-                  </p>
-                </div>
-              )}
-            </div>
-
-            {/* User Profile Avatar */}
+            {/* Réglages */}
             <button
               onClick={onOpenSettings}
               className="w-8 h-8 rounded-full bg-white/95 dark:bg-stone-900/95 backdrop-blur-md border border-amber-300/70 dark:border-stone-700 text-stone-700 dark:text-stone-200 hover:bg-white flex items-center justify-center shadow-xs transition-all"
-              title="Profil & Paramètres"
+              title={language === 'ar' ? 'الإعدادات' : language === 'en' ? 'Settings' : 'Réglages'}
+              aria-label={language === 'ar' ? 'الإعدادات' : language === 'en' ? 'Settings' : 'Réglages'}
             >
-              <User className="w-4 h-4 text-amber-800 dark:text-amber-400" />
+              <Settings className="w-4 h-4 text-amber-800 dark:text-amber-400" />
             </button>
           </div>
 
           {/* Central Imperial Emblem & Brand in High-Contrast Frosted Glass Pod */}
-          <div className="mt-3 sm:mt-5 text-center flex flex-col items-center backdrop-blur-xl bg-[#FFFDF9]/85 dark:bg-stone-900/85 px-7 sm:px-12 py-5 sm:py-6 rounded-3xl border border-amber-300/70 dark:border-amber-500/40 shadow-lg max-w-lg">
+          <div className="mt-3 sm:mt-5 text-center flex flex-col items-center backdrop-blur-md bg-[#FFFDF9]/72 dark:bg-stone-900/75 px-7 sm:px-12 py-5 sm:py-6 rounded-3xl border border-amber-300/70 dark:border-amber-500/40 shadow-lg max-w-lg">
             {/* 3D Royal Gold & Emerald Medallion Icon */}
             <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl shadow-xl mb-2 hover:scale-105 transition-transform duration-300">
               <img 

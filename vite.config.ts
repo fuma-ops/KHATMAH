@@ -32,6 +32,8 @@ export default defineConfig(() => {
           globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,woff,woff2}'],
           // Captures d'écran de l'éditeur (AI Studio) : inutiles hors ligne, 4,9 Mo de moins à installer.
           globIgnores: ['**/assets/aistudio/**'],
+          // Réception des notifications (rappel du wird) : voir public/push-sw.js.
+          importScripts: ['/push-sw.js'],
           runtimeCaching: [
             {
               urlPattern: /^https:\/\/api\.quran\.com\/.*/i,

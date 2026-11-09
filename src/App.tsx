@@ -45,6 +45,8 @@ import { getPageSurahRange, getPlanScheduleBreakdown } from './services/khatmaSc
 import { ReadingSettings } from './types/quran';
 import { AppLanguage } from './utils/translations';
 import { todayISO, localTimeHM } from './utils/localDate';
+import { todayStatus } from './components/NotificationBell';
+import { maybeShowLocalReminder, markReadToday } from './services/reminders';
 
 export default function App() {
   const [khatma, setKhatma] = useState<KhatmaState>(loadKhatmaState);
@@ -330,6 +332,19 @@ export default function App() {
       lastReadDate: todayStr
     }));
   };
+
+  // Rappel quotidien : vérification locale chaque minute, et le serveur est prévenu quand le
+  // wird du jour est terminé (pas de notification ce soir-là).
+  const remainingToday = (() => { const st = todayStatus(khatma); return khatma.hasStarted ? st.remaining : 0; })();
+  useEffect(() => {
+    const tick = () => { maybeShowLocalReminder(remainingToday, language); };
+    tick();
+    const id = window.setInterval(tick, 60_000);
+    return () => window.clearInterval(id);
+  }, [remainingToday, language]);
+  useEffect(() => {
+    if (khatma.hasStarted) markReadToday(remainingToday === 0);
+  }, [remainingToday, khatma.hasStarted]);
 
   // Signet de reprise (milieu de page) : un seul à la fois ; retoucher le même verset l'enlève.
   const handleToggleResumeMarker = (verseKey: string) => {

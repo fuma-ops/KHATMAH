@@ -65,3 +65,9 @@
   50% { box-shadow: 0 10px 32px -2px rgba(6, 78, 59, 0.55); scale: 1.02; }
 }
 .animate-pulse-soft { animation: pulse-soft 2.4s ease-in-out infinite; }
+
+/* Image d'accueil : se fond dans le fond de l'app (pas de bord visible). */
+.hero-fade {
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 35%, rgba(0,0,0,0.6) 55%, rgba(0,0,0,0.25) 75%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 35%, rgba(0,0,0,0.6) 55%, rgba(0,0,0,0.25) 75%, transparent 100%);
+}
