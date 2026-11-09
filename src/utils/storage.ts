@@ -100,8 +100,9 @@ export function saveReadingSettings(settings: ReadingSettings): void {
   }
 }
 
-// Chiffres « normaux » (0-9) partout dans l'app, y compris en arabe et dans les numéros de
-// versets (choix du propriétaire, 09/11/2026). Le nom est gardé pour ne pas toucher aux appels.
+// Chiffres arabes-indiens (١٢٣) : UNIQUEMENT pour les numéros de versets dans le texte du Coran.
+// Partout ailleurs dans l'app, chiffres normaux 0-9 (choix du propriétaire, 09/11/2026).
 export function toArabicNumerals(num: number): string {
-  return String(num);
+  const arabicDigits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+  return String(num).replace(/[0-9]/g, (d) => arabicDigits[Number(d)]);
 }

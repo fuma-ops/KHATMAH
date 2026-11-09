@@ -71,7 +71,7 @@ export const VerseDetailsModal: React.FC<VerseDetailsModalProps> = ({
         <div className="p-4 sm:p-5 border-b border-stone-200 dark:border-stone-800 flex items-center justify-between bg-white/60 dark:bg-stone-900/80">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-emerald-900 text-amber-200 flex items-center justify-center font-bold text-xs shadow-xs font-mono">
-              {language === 'ar' ? toArabicNumerals(verseNumber) : verseNumber}
+              {verseNumber}
             </div>
             <div>
               <h3 className="text-sm sm:text-base font-bold text-stone-900 dark:text-stone-100">
@@ -79,7 +79,7 @@ export const VerseDetailsModal: React.FC<VerseDetailsModalProps> = ({
               </h3>
               <p className="text-xs font-semibold text-emerald-800 dark:text-emerald-400">
                 {language === 'ar'
-                  ? `سورة ${getSurahByNumber(surahNumber)?.nameArabic || ''} · الآية ${toArabicNumerals(verseNumber)}`
+                  ? `سورة ${getSurahByNumber(surahNumber)?.nameArabic || ''} · الآية ${verseNumber}`
                   : language === 'fr'
                   ? `Sourate ${getSurahByNumber(surahNumber)?.nameTransliterated || ''} · Verset ${verseNumber}`
                   : `Surah ${getSurahByNumber(surahNumber)?.nameTransliterated || ''} · Verse ${verseNumber}`}
