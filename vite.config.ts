@@ -14,9 +14,11 @@ export default defineConfig(() => {
         includeAssets: ['favicon-48.png', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png'],
         manifest: {
           id: '/',
-          name: 'KHATMAH (ختمة) — Complete Quran, 5 pages per Juz',
-          short_name: 'KHATMAH',
-          description: 'Read the complete Holy Quran at your own pace with 5 condensed digital pages per Juz.',
+          name: 'ختمة — Khatmah',
+          short_name: 'ختمة',
+          lang: 'ar',
+          dir: 'rtl',
+          description: 'أتمّ ختمة القرآن الكريم بالوتيرة التي تناسبك — Read the whole Quran at your own pace.',
           theme_color: '#064e3b',
           background_color: '#faf7ee',
           display: 'standalone',
@@ -31,9 +33,9 @@ export default defineConfig(() => {
         workbox: {
           globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,mp4,woff,woff2}'],
           // Captures d'écran de l'éditeur (AI Studio) : inutiles hors ligne, 4,9 Mo de moins à installer.
-          globIgnores: ['**/assets/aistudio/**', 'sourate/**', 'adhkar/**', 'sourates.html', 'adhkar.html', 'douas.html', 'confidentialite.html'],
+          globIgnores: ['**/assets/aistudio/**', 'surah/**', 'adhkar/**', 'surahs.html', 'adhkar.html', 'duas.html', 'privacy.html'],
           // Pages statiques (confidentialité, sourates, adhkar, douas) : jamais remplacées par l'application.
-          navigateFallbackDenylist: [/^\/confidentialite/, /^\/privacy/, /^\/sourates?(\/|$)/, /^\/adhkar(\/|$)/, /^\/douas(\/|$)/],
+          navigateFallbackDenylist: [/^\/(privacy|confidentialite)/, /^\/(surahs?|sourates?)(\/|$)/, /^\/adhkar(\/|$)/, /^\/(duas|douas)(\/|$)/],
           runtimeCaching: [
             {
               urlPattern: /^https:\/\/api\.quran\.com\/.*/i,

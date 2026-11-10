@@ -7,7 +7,7 @@ Sources (aucun texte inventé) :
     (seo/data/adhkar.json).
   - Douas du Coran : versets coraniques cités avec leur référence (sourate:verset).
 
-Usage : python3 scripts/gen_seo.py   → écrit dans public/ (sourate/, adhkar/, douas, sitemap.xml).
+Usage : python3 scripts/gen_seo.py   → écrit dans public/ (surah/, adhkar/, duas, sitemap.xml).
 """
 import html
 import json
@@ -95,7 +95,7 @@ h2{font-size:1.15rem;margin:1.8em 0 .6em}
 .zikr .r{display:block;margin-top:6px;font-size:13px;direction:rtl}
 .zikr.done{opacity:.45}
 .note{font-size:13px;color:var(--muted);border-top:1px solid var(--line);margin-top:28px;padding-top:12px}
-.lead:not([lang=fr]),h2{font-family:"Amiri",serif}
+.lead:not([lang=en]),h2{font-family:"Amiri",serif}
 """
 
 FONTS = '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Amiri:wght@400;700&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">'
@@ -118,7 +118,7 @@ def page(path, title, desc, body, crumbs, active='', jsonld=None, lang='ar', ext
     }] + (jsonld or [])
     nav = ''.join(
         f'<a href="{h}"{" aria-current=page" if k == active else ""}>{t}</a>'
-        for k, h, t in [('sourates', '/sourates', 'السور'), ('adhkar', '/adhkar', 'الأذكار'), ('douas', '/douas', 'الأدعية'), ('app', '/', 'ختمة')]
+        for k, h, t in [('sourates', '/surahs', 'السور'), ('adhkar', '/adhkar', 'الأذكار'), ('douas', '/duas', 'الأدعية'), ('app', '/', 'ختمة')]
     )
     crumb_html = ' › '.join(f'<a href="{h}">{e(n)}</a>' for n, h in crumbs[:-1]) + (f' › <span>{e(crumbs[-1][0])}</span>' if crumbs else '')
     out = f"""<!doctype html>
@@ -151,9 +151,9 @@ def page(path, title, desc, body, crumbs, active='', jsonld=None, lang='ar', ext
 <main>
 <div class="crumbs">{crumb_html}</div>
 {body}
-<p class="note">Khatmah (ختمة) — application gratuite pour lire tout le Coran à votre rythme, sans compte. <a href="/">Ouvrir l’application</a> · <a href="/confidentialite">Confidentialité</a></p>
+<p class="note">ختمة — تطبيق مجاني لختم القرآن الكريم بالوتيرة التي تناسبك، دون حساب. Khatmah is a free app to read the whole Quran at your own pace, no account needed. <a href="/">Open the app</a> · <a href="/privacy">Privacy</a></p>
 </main>
-<div class="cta"><a href="/">📖 اقرأ في تطبيق ختمة · Lire dans Khatmah</a></div>
+<div class="cta"><a href="/">📖 اقرأ في تطبيق ختمة · Read in Khatmah</a></div>
 {extra_js}
 </body>
 </html>
@@ -168,44 +168,55 @@ def page(path, title, desc, body, crumbs, active='', jsonld=None, lang='ar', ext
 URLS = []
 
 # ─── Sourates ─────────────────────────────────────────────────────────────────────────────────
-PLACE = {'makkah': ('مكية', 'mecquoise'), 'madinah': ('مدنية', 'médinoise')}
+PLACE = {'makkah': ('مكية', 'Meccan'), 'madinah': ('مدنية', 'Medinan')}
 for c in CH:
     sid, n = c['id'], c['verses']
-    place_ar, place_fr = PLACE[c['place']]
+    place_ar, place_en = PLACE[c['place']]
     juz = juz_of(sid)
     verses = ''.join(f'{e(Q[f"{sid}:{v}"])} <span class="ayn">﴿{ar_num(v)}﴾</span> ' for v in range(1, n + 1))
     basmala = '<p class="basmala">بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ</p>' if c['bismillah'] and sid != 1 else ''
     prev_c, next_c = BY_ID.get(sid - 1), BY_ID.get(sid + 1)
     pager = '<div class="pager">' + (
-        f'<a href="/sourate/{prev_c["slug"]}">→ سورة {e(prev_c["name_ar"])}</a>' if prev_c else '<span></span>') + (
-        f'<a href="/sourate/{next_c["slug"]}" style="text-align:left">سورة {e(next_c["name_ar"])} ←</a>' if next_c else '<span></span>') + '</div>'
+        f'<a href="/surah/{prev_c["slug"]}">→ سورة {e(prev_c["name_ar"])}</a>' if prev_c else '<span></span>') + (
+        f'<a href="/surah/{next_c["slug"]}" style="text-align:left">سورة {e(next_c["name_ar"])} ←</a>' if next_c else '<span></span>') + '</div>'
     juz_txt = '، '.join(ar_num(j) for j in juz)
     pages_txt = f'{ar_num(c["pages"][0])}' if c['pages'][0] == c['pages'][1] else f'{ar_num(c["pages"][0])}–{ar_num(c["pages"][1])}'
-    pop = ''.join(f'<li><a href="/sourate/{BY_ID[p]["slug"]}"><b>سورة {e(BY_ID[p]["name_ar"])}</b><small>{e(BY_ID[p]["name_simple"])}</small></a></li>' for p in POPULAR if p != sid)[:4000]
+    pop = ''.join(f'<li><a href="/surah/{BY_ID[p]["slug"]}"><b>سورة {e(BY_ID[p]["name_ar"])}</b><small>{e(BY_ID[p]["name_simple"])}</small></a></li>' for p in POPULAR if p != sid)[:4000]
     body = f"""<h1>سورة {e(c['name_ar'])} مكتوبة كاملة</h1>
 <p class="lead">سورة {e(c['name_ar'])} {place_ar}، عدد آياتها {ar_num(n)} آية، وترتيبها في المصحف {ar_num(sid)}. نصّ السورة كاملاً بالرسم العثماني مع أرقام الآيات.</p>
-<p class="lead" dir="ltr" lang="fr" style="text-align:left">Sourate {sid} <strong>{e(c['name_simple'])}</strong> ({e(c['name_fr'])}) en arabe, texte complet en écriture uthmanie : sourate {place_fr}, {n} versets.</p>
+<p class="lead" dir="ltr" lang="en" style="text-align:left">Surah {sid} <strong>{e(c['name_simple'])}</strong> ({e(c['name_en'])}) — full Arabic text in Uthmani script: a {place_en} surah of {n} verses.</p>
 <div class="facts"><span>{place_ar}</span><span>{ar_num(n)} آية</span><span>الجزء {juz_txt}</span><span>صفحات المصحف {pages_txt}</span><span>ترتيب النزول {ar_num(c['order'])}</span></div>
 <div class="mushaf">{basmala}<p class="quran">{verses}</p></div>
 {pager}
 <h2>سور يكثر البحث عنها</h2><ul class="grid">{pop}</ul>
-<h2>أذكار وأدعية</h2><ul class="grid"><li><a href="/adhkar/sabah"><b>أذكار الصباح</b></a></li><li><a href="/adhkar/masa"><b>أذكار المساء</b></a></li><li><a href="/douas"><b>أدعية من القرآن</b></a></li></ul>
-<p class="note">النص القرآني بالرسم العثماني من quran.com. Texte coranique : quran.com (écriture uthmanie).</p>"""
-    title = f'سورة {c["name_ar"]} مكتوبة كاملة بالرسم العثماني | Sourate {c["name_simple"]} — Khatmah'
-    desc = f'سورة {c["name_ar"]} مكتوبة كاملة بالتشكيل والرسم العثماني ({n} آية، {place_ar}). Sourate {c["name_simple"]} ({c["name_fr"]}) en arabe, texte complet.'
+<h2>أذكار وأدعية</h2><ul class="grid"><li><a href="/adhkar/sabah"><b>أذكار الصباح</b></a></li><li><a href="/adhkar/masa"><b>أذكار المساء</b></a></li><li><a href="/duas"><b>أدعية من القرآن</b></a></li></ul>
+<p class="note">النص القرآني بالرسم العثماني من quran.com. Quran text in Uthmani script from quran.com.</p>"""
+    title = f'سورة {c["name_ar"]} مكتوبة كاملة بالرسم العثماني | Surah {c["name_simple"]} in Arabic — Khatmah'
+    desc = f'سورة {c["name_ar"]} مكتوبة كاملة بالتشكيل والرسم العثماني ({n} آية، {place_ar}). Surah {c["name_simple"]} ({c["name_en"]}): full Arabic text, {n} verses.'
     ld = [{'@context': 'https://schema.org', '@type': 'Chapter', 'name': f'سورة {c["name_ar"]}', 'alternateName': c['name_simple'],
-           'position': sid, 'inLanguage': 'ar', 'isPartOf': {'@type': 'Book', 'name': 'القرآن الكريم'}, 'url': SITE + f'/sourate/{c["slug"]}'}]
-    URLS.append(page(f'/sourate/{c["slug"]}', title, desc, body,
-                     [('ختمة', '/'), ('السور', '/sourates'), (f'سورة {c["name_ar"]}', f'/sourate/{c["slug"]}')], 'sourates', ld))
+           'position': sid, 'inLanguage': 'ar', 'isPartOf': {'@type': 'Book', 'name': 'القرآن الكريم'}, 'url': SITE + f'/surah/{c["slug"]}'}]
+    URLS.append(page(f'/surah/{c["slug"]}', title, desc, body,
+                     [('ختمة', '/'), ('السور', '/surahs'), (f'سورة {c["name_ar"]}', f'/surah/{c["slug"]}')], 'sourates', ld))
 
 items = ''.join(
-    f'<li><a href="/sourate/{c["slug"]}"><b>{ar_num(c["id"])}. سورة {e(c["name_ar"])}</b><small>{e(c["name_simple"])} · {ar_num(c["verses"])} آية · {PLACE[c["place"]][0]}</small></a></li>' for c in CH)
-URLS.append(page('/sourates', 'سور القرآن الكريم مكتوبة كاملة (114 سورة) | Les 114 sourates du Coran — Khatmah',
-                 'فهرس سور القرآن الكريم الـ114 مكتوبة كاملة بالرسم العثماني: عدد الآيات، مكية أو مدنية. Les 114 sourates du Coran en arabe, texte complet.',
-                 f'<h1>سور القرآن الكريم مكتوبة كاملة</h1><p class="lead">فهرس السور الـ١١٤ بالرسم العثماني مع عدد الآيات ومكان النزول. Les 114 sourates du Coran en arabe.</p><ul class="grid">{items}</ul>',
-                 [('ختمة', '/'), ('السور', '/sourates')], 'sourates'))
+    f'<li><a href="/surah/{c["slug"]}"><b>{ar_num(c["id"])}. سورة {e(c["name_ar"])}</b><small>{e(c["name_simple"])} · {ar_num(c["verses"])} آية · {PLACE[c["place"]][0]}</small></a></li>' for c in CH)
+URLS.append(page('/surahs', 'سور القرآن الكريم مكتوبة كاملة (114 سورة) | All 114 surahs of the Quran — Khatmah',
+                 'فهرس سور القرآن الكريم الـ114 مكتوبة كاملة بالرسم العثماني: عدد الآيات، مكية أو مدنية. All 114 surahs of the Quran in Arabic, full text.',
+                 f'<h1>سور القرآن الكريم مكتوبة كاملة</h1><p class="lead">فهرس السور الـ١١٤ بالرسم العثماني مع عدد الآيات ومكان النزول. All 114 surahs of the Quran in Arabic.</p><ul class="grid">{items}</ul>',
+                 [('ختمة', '/'), ('السور', '/surahs')], 'sourates'))
 
 # ─── Adhkar ───────────────────────────────────────────────────────────────────────────────────
+INTRO_EN = {
+    'sabah': 'Recited after Fajr prayer until sunrise.', 'masa': 'Recited after Asr prayer until sunset (or early in the night).',
+    'nawm': 'Supplications before going to sleep.', 'istiqadh': 'Supplications upon waking up.',
+    'bad-salat': 'Remembrance after the salam of each obligatory prayer.', 'adhan': 'What to say when hearing the call to prayer and after it.',
+    'wudu': 'Before and after ablution.', 'manzil': 'When leaving and entering the home.', 'masjid': 'Going to, entering and leaving the mosque.',
+    'taam': 'Before and after eating.', 'safar': 'When riding, setting out on a journey and returning.',
+    'hamm-karb': 'Supplications in worry, grief and hardship.', 'istikhara': 'The prayer for guidance before a decision.',
+    'marid': 'When visiting the sick and when feeling pain.', 'matar': 'When rain falls and after it.',
+    'istighfar': 'Formulas of repentance from the Sunnah.', 'tasbih': 'The formulas of glorification and their virtues.',
+}
+
 TIMES = {1: 'مرة واحدة', 2: 'مرتان'}
 
 
@@ -215,7 +226,7 @@ def times_ar(n):
     return f'{ar_num(n)} مرات' if 3 <= n <= 10 else f'{ar_num(n)} مرة'
 
 
-SOURCE_NOTE = '<p class="note">النصوص والتخريج من كتاب «حصن المسلم من أذكار الكتاب والسنة» للشيخ سعيد بن علي بن وهف القحطاني. Textes et références : « Hisn al-Muslim » de Sa‘id al-Qahtani. اضغط على الذكر لعدّ التكرار.</p>'
+SOURCE_NOTE = '<p class="note">النصوص والتخريج من كتاب «حصن المسلم من أذكار الكتاب والسنة» للشيخ سعيد بن علي بن وهف القحطاني. Texts and references: “Hisn al-Muslim” by Sa‘id al-Qahtani. اضغط على الذكر لعدّ التكرار · Tap a dhikr to count.</p>'
 
 for cat in ADHKAR:
     cards = []
@@ -224,85 +235,85 @@ for cat in ADHKAR:
         fadl = f'<span class="f">{e(it["fadl"])}</span>' if it['fadl'] else ''
         ref = f'<span class="r">📚 {e(it["ref"])}</span>' if it['ref'] else ''
         cards.append(f'<div class="zikr" data-n="{n}"><div class="t">{e(it["text"])}</div><div class="meta"><span class="n">{n} ×</span><span>{times_ar(n)}</span></div>{fadl}{ref}</div>')
-    others = ''.join(f'<li><a href="/adhkar/{o["slug"]}"><b>{e(o["ar"])}</b><small>{e(o["fr"])}</small></a></li>' for o in ADHKAR if o['slug'] != cat['slug'])
+    others = ''.join(f'<li><a href="/adhkar/{o["slug"]}"><b>{e(o["ar"])}</b><small>{e(o["en"])}</small></a></li>' for o in ADHKAR if o['slug'] != cat['slug'])
     body = f"""<h1>{e(cat['ar'])} مكتوبة كاملة</h1>
-<p class="lead" dir="ltr" lang="fr" style="text-align:left"><strong>{e(cat['fr'])}</strong> — {e(cat['intro_fr'])} {len(cat['items'])} invocations en arabe, avec le nombre de répétitions et la référence de chaque texte.</p>
+<p class="lead" dir="ltr" lang="en" style="text-align:left"><strong>{e(cat['en'])}</strong> — {e(INTRO_EN[cat['slug']])} {len(cat['items'])} supplications in Arabic, with the number of repetitions and the source of each text.</p>
 {''.join(cards)}
 {SOURCE_NOTE}
 <h2>أذكار أخرى</h2><ul class="grid">{others}</ul>"""
-    title = f'{cat["ar"]} مكتوبة كاملة مع المصدر | {cat["fr"]} — Khatmah'
-    desc = f'{cat["ar"]} مكتوبة بالتشكيل مع عدد التكرار والتخريج من حصن المسلم. {cat["fr"]} : {len(cat["items"])} invocations en arabe avec leurs sources.'
+    title = f'{cat["ar"]} مكتوبة كاملة مع المصدر | {cat["en"]} — Khatmah'
+    desc = f'{cat["ar"]} مكتوبة بالتشكيل مع عدد التكرار والتخريج من حصن المسلم. {cat["en"]}: {len(cat["items"])} supplications in Arabic with their sources.'
     ld = [{'@context': 'https://schema.org', '@type': 'Article', 'headline': f'{cat["ar"]} مكتوبة كاملة', 'inLanguage': 'ar',
            'dateModified': UPDATED, 'publisher': {'@type': 'Organization', 'name': 'Khatmah'},
            'citation': 'حصن المسلم من أذكار الكتاب والسنة — سعيد بن علي بن وهف القحطاني'}]
     URLS.append(page(f'/adhkar/{cat["slug"]}', title, desc, body,
                      [('ختمة', '/'), ('الأذكار', '/adhkar'), (cat['ar'], f'/adhkar/{cat["slug"]}')], 'adhkar', ld, extra_js=COUNTER_JS))
 
-items = ''.join(f'<li><a href="/adhkar/{c["slug"]}"><b>{e(c["ar"])}</b><small>{e(c["fr"])} · {len(c["items"])}</small></a></li>' for c in ADHKAR)
-URLS.append(page('/adhkar', 'الأذكار اليومية مكتوبة: أذكار الصباح والمساء والنوم | Adhkar — Khatmah',
-                 'أذكار الصباح والمساء والنوم وبعد الصلاة وأدعية اليوم مكتوبة بالتشكيل مع التخريج من حصن المسلم. Adhkar du matin, du soir et du quotidien en arabe avec leurs sources.',
-                 f'<h1>الأذكار اليومية</h1><p class="lead">أذكار الصباح والمساء والنوم وبعد الصلاة وأذكار اليوم والليلة، مكتوبة بالتشكيل مع عدد التكرار وتخريج كل ذكر.</p><p class="lead" dir="ltr" lang="fr" style="text-align:left">Les adhkar du quotidien en arabe, avec le nombre de répétitions et la source de chaque texte (Hisn al-Muslim).</p><ul class="grid">{items}</ul>{SOURCE_NOTE}',
+items = ''.join(f'<li><a href="/adhkar/{c["slug"]}"><b>{e(c["ar"])}</b><small>{e(c["en"])} · {len(c["items"])}</small></a></li>' for c in ADHKAR)
+URLS.append(page('/adhkar', 'الأذكار اليومية مكتوبة: أذكار الصباح والمساء والنوم | Daily Adhkar — Khatmah',
+                 'أذكار الصباح والمساء والنوم وبعد الصلاة وأدعية اليوم مكتوبة بالتشكيل مع التخريج من حصن المسلم. Morning, evening and daily adhkar in Arabic with their sources.',
+                 f'<h1>الأذكار اليومية</h1><p class="lead">أذكار الصباح والمساء والنوم وبعد الصلاة وأذكار اليوم والليلة، مكتوبة بالتشكيل مع عدد التكرار وتخريج كل ذكر.</p><p class="lead" dir="ltr" lang="en" style="text-align:left">Daily adhkar in Arabic, with the number of repetitions and the source of each text (Hisn al-Muslim).</p><ul class="grid">{items}</ul>{SOURCE_NOTE}',
                  [('ختمة', '/'), ('الأذكار', '/adhkar')], 'adhkar'))
 
 # ─── Douas du Coran ───────────────────────────────────────────────────────────────────────────
 DOUAS = [
-    ('2:127-128', 'دعاء إبراهيم وإسماعيل عليهما السلام عند رفع قواعد البيت', 'Invocation d’Ibrahim et d’Ismaïl'),
-    ('2:201', 'ربنا آتنا في الدنيا حسنة وفي الآخرة حسنة', 'Le bien ici-bas et dans l’au-delà'),
-    ('2:250', 'دعاء طلب الصبر والثبات', 'Demander la patience et la fermeté'),
-    ('2:286', 'خواتيم سورة البقرة', 'Fin de la sourate Al-Baqara'),
-    ('3:8-9', 'ربنا لا تزغ قلوبنا بعد إذ هديتنا', 'Ne fais pas dévier nos cœurs'),
-    ('3:16', 'ربنا إننا آمنا فاغفر لنا ذنوبنا', 'Pardonne-nous nos péchés'),
-    ('3:38', 'دعاء زكريا عليه السلام بالذرية الطيبة', 'Invocation de Zakariya pour une descendance pieuse'),
-    ('3:53', 'دعاء الحواريين', 'Invocation des apôtres'),
-    ('3:147', 'ربنا اغفر لنا ذنوبنا وإسرافنا في أمرنا', 'Pardon et fermeté'),
-    ('3:191-194', 'دعاء أولي الألباب', 'Invocation des doués d’intelligence'),
-    ('7:23', 'دعاء آدم وحواء عليهما السلام: ربنا ظلمنا أنفسنا', 'Invocation d’Adam et Hawwa'),
-    ('7:89', 'ربنا افتح بيننا وبين قومنا بالحق', 'Invocation de Chou‘ayb'),
-    ('7:126', 'ربنا أفرغ علينا صبرا وتوفنا مسلمين', 'Mourir soumis à Allah'),
-    ('10:85-86', 'ربنا لا تجعلنا فتنة للقوم الظالمين', 'Protection contre les injustes'),
-    ('14:40-41', 'دعاء إبراهيم عليه السلام لنفسه وذريته ووالديه', 'Invocation d’Ibrahim pour sa descendance et ses parents'),
-    ('17:24', 'الدعاء للوالدين: رب ارحمهما كما ربياني صغيرا', 'Invocation pour les parents'),
-    ('17:80', 'رب أدخلني مدخل صدق وأخرجني مخرج صدق', 'Une entrée et une sortie de vérité'),
-    ('18:10', 'دعاء أصحاب الكهف', 'Invocation des gens de la caverne'),
-    ('20:25-28', 'دعاء موسى عليه السلام: رب اشرح لي صدري', 'Invocation de Moussa : ouvre-moi ma poitrine'),
-    ('20:114', 'رب زدني علما', 'Seigneur, accrois mon savoir'),
-    ('21:83', 'دعاء أيوب عليه السلام', 'Invocation d’Ayyoub'),
-    ('21:87', 'دعاء يونس عليه السلام (ذي النون)', 'Invocation de Younous'),
-    ('21:89', 'دعاء زكريا عليه السلام: رب لا تذرني فردا', 'Invocation de Zakariya'),
-    ('23:29', 'رب أنزلني منزلا مباركا', 'Une demeure bénie'),
-    ('23:97-98', 'الاستعاذة من همزات الشياطين', 'Protection contre les suggestions des démons'),
-    ('23:109', 'ربنا آمنا فاغفر لنا وارحمنا', 'Pardon et miséricorde'),
-    ('23:118', 'رب اغفر وارحم وأنت خير الراحمين', 'Pardonne et fais miséricorde'),
-    ('25:65', 'ربنا اصرف عنا عذاب جهنم', 'Protection contre l’Enfer'),
-    ('25:74', 'ربنا هب لنا من أزواجنا وذرياتنا قرة أعين', 'Pour les conjoints et les enfants'),
-    ('26:83', 'دعاء إبراهيم عليه السلام: رب هب لي حكما', 'Invocation d’Ibrahim pour la sagesse'),
-    ('27:19', 'دعاء سليمان عليه السلام بالشكر', 'Invocation de Soulayman pour la gratitude'),
-    ('28:16', 'دعاء موسى عليه السلام بالمغفرة', 'Invocation de Moussa pour le pardon'),
-    ('28:24', 'رب إني لما أنزلت إلي من خير فقير', 'Invocation de Moussa dans le besoin'),
-    ('40:7-8', 'دعاء حملة العرش للمؤمنين', 'Invocation des porteurs du Trône'),
-    ('46:15', 'دعاء الشكر وصلاح الذرية', 'Gratitude et descendance pieuse'),
-    ('59:10', 'ربنا اغفر لنا ولإخواننا الذين سبقونا بالإيمان', 'Pour nos frères croyants'),
-    ('60:4-5', 'ربنا عليك توكلنا وإليك أنبنا', 'Confiance et retour vers Allah'),
-    ('66:8', 'ربنا أتمم لنا نورنا واغفر لنا', 'Parfais pour nous notre lumière'),
-    ('71:28', 'دعاء نوح عليه السلام: رب اغفر لي ولوالدي', 'Invocation de Nouh pour ses parents et les croyants'),
+    ('2:127-128', 'دعاء إبراهيم وإسماعيل عليهما السلام عند رفع قواعد البيت', 'Dua of Ibrahim and Ismail'),
+    ('2:201', 'ربنا آتنا في الدنيا حسنة وفي الآخرة حسنة', 'Good in this world and the Hereafter'),
+    ('2:250', 'دعاء طلب الصبر والثبات', 'Asking for patience and steadfastness'),
+    ('2:286', 'خواتيم سورة البقرة', 'End of Surah Al-Baqarah'),
+    ('3:8-9', 'ربنا لا تزغ قلوبنا بعد إذ هديتنا', 'Do not let our hearts deviate'),
+    ('3:16', 'ربنا إننا آمنا فاغفر لنا ذنوبنا', 'Forgive us our sins'),
+    ('3:38', 'دعاء زكريا عليه السلام بالذرية الطيبة', 'Dua of Zakariya for righteous offspring'),
+    ('3:53', 'دعاء الحواريين', 'Dua of the disciples'),
+    ('3:147', 'ربنا اغفر لنا ذنوبنا وإسرافنا في أمرنا', 'Forgiveness and firmness'),
+    ('3:191-194', 'دعاء أولي الألباب', 'Dua of the people of understanding'),
+    ('7:23', 'دعاء آدم وحواء عليهما السلام: ربنا ظلمنا أنفسنا', 'Dua of Adam and Hawwa'),
+    ('7:89', 'ربنا افتح بيننا وبين قومنا بالحق', 'Dua of Shu‘ayb'),
+    ('7:126', 'ربنا أفرغ علينا صبرا وتوفنا مسلمين', 'To die as Muslims'),
+    ('10:85-86', 'ربنا لا تجعلنا فتنة للقوم الظالمين', 'Protection from the wrongdoers'),
+    ('14:40-41', 'دعاء إبراهيم عليه السلام لنفسه وذريته ووالديه', 'Dua of Ibrahim for his offspring and parents'),
+    ('17:24', 'الدعاء للوالدين: رب ارحمهما كما ربياني صغيرا', 'Dua for parents'),
+    ('17:80', 'رب أدخلني مدخل صدق وأخرجني مخرج صدق', 'A truthful entrance and exit'),
+    ('18:10', 'دعاء أصحاب الكهف', 'Dua of the People of the Cave'),
+    ('20:25-28', 'دعاء موسى عليه السلام: رب اشرح لي صدري', 'Dua of Musa: expand my chest'),
+    ('20:114', 'رب زدني علما', 'My Lord, increase me in knowledge'),
+    ('21:83', 'دعاء أيوب عليه السلام', 'Dua of Ayyub'),
+    ('21:87', 'دعاء يونس عليه السلام (ذي النون)', 'Dua of Yunus'),
+    ('21:89', 'دعاء زكريا عليه السلام: رب لا تذرني فردا', 'Dua of Zakariya'),
+    ('23:29', 'رب أنزلني منزلا مباركا', 'A blessed landing place'),
+    ('23:97-98', 'الاستعاذة من همزات الشياطين', 'Refuge from the whispers of devils'),
+    ('23:109', 'ربنا آمنا فاغفر لنا وارحمنا', 'Forgiveness and mercy'),
+    ('23:118', 'رب اغفر وارحم وأنت خير الراحمين', 'Forgive and have mercy'),
+    ('25:65', 'ربنا اصرف عنا عذاب جهنم', 'Protection from Hellfire'),
+    ('25:74', 'ربنا هب لنا من أزواجنا وذرياتنا قرة أعين', 'For spouses and children'),
+    ('26:83', 'دعاء إبراهيم عليه السلام: رب هب لي حكما', 'Dua of Ibrahim for wisdom'),
+    ('27:19', 'دعاء سليمان عليه السلام بالشكر', 'Dua of Sulayman for gratitude'),
+    ('28:16', 'دعاء موسى عليه السلام بالمغفرة', 'Dua of Musa for forgiveness'),
+    ('28:24', 'رب إني لما أنزلت إلي من خير فقير', 'Dua of Musa in need'),
+    ('40:7-8', 'دعاء حملة العرش للمؤمنين', 'Dua of the bearers of the Throne'),
+    ('46:15', 'دعاء الشكر وصلاح الذرية', 'Gratitude and righteous offspring'),
+    ('59:10', 'ربنا اغفر لنا ولإخواننا الذين سبقونا بالإيمان', 'For our believing brothers'),
+    ('60:4-5', 'ربنا عليك توكلنا وإليك أنبنا', 'Reliance and turning to Allah'),
+    ('66:8', 'ربنا أتمم لنا نورنا واغفر لنا', 'Perfect our light for us'),
+    ('71:28', 'دعاء نوح عليه السلام: رب اغفر لي ولوالدي', 'Dua of Nuh for his parents and the believers'),
 ]
 cards = []
-for ref, ar_title, fr_title in DOUAS:
+for ref, ar_title, en_title in DOUAS:
     s, r = ref.split(':')
     a, b = (r.split('-') + [r])[:2]
     a, b = int(a), int(b)
     c = BY_ID[int(s)]
     text = ''.join(f'{e(Q[f"{s}:{v}"])} <span class="ayn">﴿{ar_num(v)}﴾</span> ' for v in range(a, b + 1))
     where = f'سورة {c["name_ar"]}، الآية {ar_num(a)}' + (f'–{ar_num(b)}' if b != a else '')
-    cards.append(f'<div class="zikr"><div class="meta" style="margin:0 0 6px"><strong style="color:var(--brand);font-size:16px;font-family:Amiri,serif">{e(ar_title)}</strong></div><div class="t quran" style="font-size:24px">{text}</div><span class="r">📖 <a href="/sourate/{c["slug"]}">{e(where)}</a> · {e(fr_title)}</span></div>')
-sunna = ''.join(f'<li><a href="/adhkar/{c["slug"]}"><b>{e(c["ar"])}</b><small>{e(c["fr"])}</small></a></li>' for c in ADHKAR if c['slug'] in ('hamm-karb', 'istikhara', 'safar', 'marid', 'istighfar', 'taam', 'matar'))
-URLS.append(page('/douas', 'أدعية من القرآن الكريم مكتوبة (ربنا آتنا…) | Douas du Coran — Khatmah',
-                 f'{len(DOUAS)} دعاء من القرآن الكريم مكتوبة بالرسم العثماني مع السورة ورقم الآية: أدعية الأنبياء والصالحين. Douas du Coran en arabe avec leur référence.',
-                 f'<h1>أدعية من القرآن الكريم</h1><p class="lead">أدعية الأنبياء والصالحين كما وردت في القرآن الكريم، بالرسم العثماني مع اسم السورة ورقم الآية.</p><p class="lead" dir="ltr" lang="fr" style="text-align:left">Les invocations du Coran (Rabbana…) en arabe, avec la sourate et le numéro de chaque verset.</p>{"".join(cards)}<h2>أدعية من السنة</h2><ul class="grid">{sunna}</ul>',
-                 [('ختمة', '/'), ('الأدعية', '/douas')], 'douas'))
+    cards.append(f'<div class="zikr"><div class="meta" style="margin:0 0 6px"><strong style="color:var(--brand);font-size:16px;font-family:Amiri,serif">{e(ar_title)}</strong></div><div class="t quran" style="font-size:24px">{text}</div><span class="r">📖 <a href="/surah/{c["slug"]}">{e(where)}</a> · {e(en_title)}</span></div>')
+sunna = ''.join(f'<li><a href="/adhkar/{c["slug"]}"><b>{e(c["ar"])}</b><small>{e(c["en"])}</small></a></li>' for c in ADHKAR if c['slug'] in ('hamm-karb', 'istikhara', 'safar', 'marid', 'istighfar', 'taam', 'matar'))
+URLS.append(page('/duas', 'أدعية من القرآن الكريم مكتوبة (ربنا آتنا…) | Duas from the Quran — Khatmah',
+                 f'{len(DOUAS)} دعاء من القرآن الكريم مكتوبة بالرسم العثماني مع السورة ورقم الآية: أدعية الأنبياء والصالحين. Duas from the Quran in Arabic with their references.',
+                 f'<h1>أدعية من القرآن الكريم</h1><p class="lead">أدعية الأنبياء والصالحين كما وردت في القرآن الكريم، بالرسم العثماني مع اسم السورة ورقم الآية.</p><p class="lead" dir="ltr" lang="en" style="text-align:left">Supplications from the Quran (Rabbana…) in Arabic, with the surah and verse number of each.</p>{"".join(cards)}<h2>أدعية من السنة</h2><ul class="grid">{sunna}</ul>',
+                 [('ختمة', '/'), ('الأدعية', '/duas')], 'douas'))
 
 # ─── Sitemap ──────────────────────────────────────────────────────────────────────────────────
-all_urls = ['/', '/confidentialite'] + sorted(URLS, key=lambda u: (u.count('/'), u))
+all_urls = ['/', '/privacy'] + sorted(URLS, key=lambda u: (u.count('/'), u))
 xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + ''.join(
     f'  <url><loc>{SITE}{u}</loc><lastmod>{UPDATED}</lastmod></url>\n' for u in all_urls) + '</urlset>\n'
 open(os.path.join(PUB, 'sitemap.xml'), 'w', encoding='utf-8').write(xml)

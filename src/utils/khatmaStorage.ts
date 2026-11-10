@@ -3,7 +3,8 @@ import { AppLanguage } from './translations';
 import { todayISO } from './localDate';
 
 const STORAGE_KEY_KHATMA = 'khatmati_user_state_v3';
-const STORAGE_KEY_LANG = 'khatmati_user_lang_v3';
+// v4 : l'arabe devient la langue par défaut (la v3 enregistrait automatiquement le français par défaut).
+const STORAGE_KEY_LANG = 'khatmah_user_lang_v4';
 
 export const DEFAULT_KHATMA_STATE: KhatmaState = {
   khatmaNumber: 1,
@@ -64,9 +65,9 @@ export function loadUserLanguage(): AppLanguage {
     if (raw === 'ar' || raw === 'fr' || raw === 'en') {
       return raw;
     }
-    return 'fr'; // default French
+    return 'ar'; // langue par défaut : arabe
   } catch {
-    return 'fr';
+    return 'ar';
   }
 }
 

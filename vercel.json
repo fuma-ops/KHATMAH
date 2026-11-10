@@ -40,8 +40,23 @@
   ],
   "redirects": [
     {
-      "source": "/privacy",
-      "destination": "/confidentialite",
+      "source": "/confidentialite",
+      "destination": "/privacy",
+      "permanent": true
+    },
+    {
+      "source": "/sourates",
+      "destination": "/surahs",
+      "permanent": true
+    },
+    {
+      "source": "/sourate/:slug",
+      "destination": "/surah/:slug",
+      "permanent": true
+    },
+    {
+      "source": "/douas",
+      "destination": "/duas",
       "permanent": true
     }
   ]

@@ -515,8 +515,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
         <div className="mt-3 grid grid-cols-3 gap-2">
           {[
             { href: '/adhkar', icon: '📿', ar: 'الأذكار', fr: 'Adhkar', en: 'Adhkar' },
-            { href: '/douas', icon: '🤲', ar: 'أدعية القرآن', fr: 'Douas', en: 'Duas' },
-            { href: '/sourates', icon: '📖', ar: 'السور', fr: 'Sourates', en: 'Surahs' },
+            { href: '/duas', icon: '🤲', ar: 'أدعية القرآن', fr: 'Douas', en: 'Duas' },
+            { href: '/surahs', icon: '📖', ar: 'السور', fr: 'Sourates', en: 'Surahs' },
           ].map((l) => (
             <a
               key={l.href}
