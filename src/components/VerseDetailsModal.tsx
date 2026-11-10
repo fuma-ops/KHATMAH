@@ -65,10 +65,11 @@ export const VerseDetailsModal: React.FC<VerseDetailsModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-xs transition-opacity animate-in fade-in">
       <div 
         dir={language === 'ar' ? 'rtl' : 'ltr'}
-        className="relative w-full max-w-2xl max-h-[85vh] flex flex-col rounded-t-3xl sm:rounded-3xl bg-[#FAF7EE] dark:bg-stone-900 text-stone-900 dark:text-stone-100 border border-stone-200 dark:border-stone-800 shadow-2xl overflow-hidden"
+        style={{ maxHeight: '88dvh' }}
+        className="relative w-full max-w-2xl max-h-[88vh] flex flex-col rounded-t-3xl sm:rounded-3xl bg-[#FAF7EE] dark:bg-stone-900 text-stone-900 dark:text-stone-100 border border-stone-200 dark:border-stone-800 shadow-2xl overflow-hidden"
       >
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-stone-200 dark:border-stone-800 flex items-center justify-between bg-white/60 dark:bg-stone-900/80">
+        <div className="shrink-0 p-4 sm:p-5 border-b border-stone-200 dark:border-stone-800 flex items-center justify-between bg-white/60 dark:bg-stone-900/80">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-emerald-900 text-amber-200 flex items-center justify-center font-bold text-xs shadow-xs font-mono">
               {verseNumber}
@@ -106,6 +107,8 @@ export const VerseDetailsModal: React.FC<VerseDetailsModalProps> = ({
           </div>
         </div>
 
+        {/* Tout le contenu sous l'en-tête défile d'un seul bloc (verset long + tafsir) */}
+        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
         {/* Original Arabic Verse Box with Thematic Theme Badge */}
         {(() => {
           const theme = getVerseTheme(arabicText, surahNumber, verseNumber);
@@ -171,7 +174,7 @@ export const VerseDetailsModal: React.FC<VerseDetailsModalProps> = ({
         )}
 
         {/* Tab Navigation */}
-        <div className="flex items-center gap-1 p-2 border-b border-stone-200 dark:border-stone-800 bg-white/40 dark:bg-stone-900/60 overflow-x-auto text-xs font-medium">
+        <div className="sticky top-0 z-10 flex items-center gap-1 p-2 border-b border-stone-200 dark:border-stone-800 bg-[#FAF7EE]/95 dark:bg-stone-900/95 backdrop-blur-sm overflow-x-auto text-xs font-medium">
           <button
             onClick={() => setActiveTab('tafsir')}
             className={`px-3 py-1.5 rounded-lg whitespace-nowrap transition-colors ${
@@ -195,7 +198,7 @@ export const VerseDetailsModal: React.FC<VerseDetailsModalProps> = ({
         </div>
 
         {/* Content Body */}
-        <div className="p-5 overflow-y-auto flex-1 space-y-4">
+        <div className="p-5 space-y-4">
           {loading ? (
             <div className="py-12 flex flex-col items-center justify-center gap-2 text-stone-400">
               <Loader2 className="w-6 h-6 animate-spin text-emerald-800" />
@@ -253,9 +256,10 @@ export const VerseDetailsModal: React.FC<VerseDetailsModalProps> = ({
             </>
           )}
         </div>
+        </div>
 
         {/* Footer */}
-        <div className="p-3.5 border-t border-stone-200 dark:border-stone-800 bg-white/60 dark:bg-stone-900/80 text-right">
+        <div className="shrink-0 p-3.5 border-t border-stone-200 dark:border-stone-800 bg-white/60 dark:bg-stone-900/80 text-right">
           <button
             onClick={onClose}
             className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-800 hover:bg-emerald-700 transition-colors"

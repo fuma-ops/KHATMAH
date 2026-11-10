@@ -71,3 +71,17 @@
   -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 35%, rgba(0,0,0,0.6) 55%, rgba(0,0,0,0.25) 75%, transparent 100%);
   mask-image: linear-gradient(to bottom, #000 0%, #000 35%, rgba(0,0,0,0.6) 55%, rgba(0,0,0,0.25) 75%, transparent 100%);
 }
+
+/* Surlignages discrets des versets : le texte change simplement de couleur, sans fond ni cadre,
+   pour ne pas empiéter sur les lignes voisines (la police du Coran est haute). */
+.verse-return, .verse-resume, .verse-focus {
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  border-radius: 3px;
+}
+.verse-return { color: #047857; }
+.verse-resume { color: #92400e; }
+.verse-focus  { background-color: rgba(245, 158, 11, 0.06); }
+.dark .verse-return { color: #6ee7b7; }
+.dark .verse-resume { color: #fcd34d; }
+.dark .verse-focus  { background-color: rgba(251, 191, 36, 0.07); }

@@ -861,11 +861,11 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                           isVersePlaying 
                             ? 'bg-amber-300/50 dark:bg-amber-900/40 font-bold' 
                             : returnVerseKey === verse.verseKey
-                            ? 'bg-emerald-200/70 dark:bg-emerald-800/50 ring-1 ring-emerald-600/40' 
+                            ? 'verse-return' 
                             : resumeVerseKey === verse.verseKey
-                            ? `bg-amber-200/60 dark:bg-amber-900/40 ring-1 ring-amber-500/60 ${resumeGlow ? 'animate-pulse' : ''}`
+                            ? `verse-resume ${resumeGlow ? 'animate-pulse' : ''}`
                             : isFocused
-                            ? 'bg-amber-200/40 dark:bg-amber-950/50 ring-1 ring-amber-400/40'
+                            ? 'verse-focus'
                             : 'hover:bg-amber-100/30 dark:hover:bg-white/5'
                         }`}
                         style={{
