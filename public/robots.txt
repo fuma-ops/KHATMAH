@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://khatmah.fumaops.com/sitemap.xml

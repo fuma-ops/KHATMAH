@@ -741,6 +741,9 @@ export default function App() {
             <div className="flex items-center gap-4 text-stone-400 font-mono">
               <span>30 Juz · 150 Pages</span>
               <span>Coran 100% Intégral</span>
+              <a href="/confidentialite" className="font-sans underline underline-offset-2 hover:text-emerald-800 dark:hover:text-emerald-300">
+                {language === 'ar' ? 'الخصوصية' : language === 'en' ? 'Privacy' : 'Confidentialité'}
+              </a>
             </div>
           </div>
         </footer>
