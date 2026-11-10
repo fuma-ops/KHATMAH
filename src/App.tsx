@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { track, trackScreen } from './services/analytics';
 import React, { useState, useEffect } from 'react';
 import { 
   Home, 
@@ -52,6 +53,8 @@ export default function App() {
   const isRtl = language === 'ar';
   const [settings, setSettings] = useState<ReadingSettings>(loadReadingSettings);
   const [currentTab, setCurrentTab] = useState<'home' | 'khatma' | 'quran' | 'history' | 'settings'>('home');
+  // Mesure d'audience : un écran vu par changement d'onglet (Google Tag Manager).
+  useEffect(() => trackScreen(currentTab), [currentTab]);
 
   // Modals state
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
@@ -145,6 +148,7 @@ export default function App() {
   };
 
   const handleConfirmStartWird = (targetJuz: number, targetPage: number) => {
+    track(khatma.hasStarted ? 'khatmah_resume' : 'khatmah_start', { juz: targetJuz, page: targetPage });
     const nowIso = new Date().toISOString();
     setKhatma(prev => ({
       ...prev,
@@ -204,6 +208,7 @@ export default function App() {
     } else {
       newCompleted = [...khatma.completedPages, key];
       newDailyCount += 1;
+      track('khatmah_page_read', { juz, page, pages_read_total: newCompleted.length });
 
       // Record detailed reading session with exact time and authentic Surah range
       const surahInfo = getPageSurahRange(juz, page);

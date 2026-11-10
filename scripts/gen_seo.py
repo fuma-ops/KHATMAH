@@ -100,6 +100,13 @@ h2{font-size:1.15rem;margin:1.8em 0 .6em}
 
 FONTS = '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Amiri:wght@400;700&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">'
 
+GTM_HEAD = '''<!-- Google Tag Manager (mesure d'audience : GA4 configuré dans GTM-TG95398C) -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-TG95398C');</script>
+<!-- End Google Tag Manager -->'''
+GTM_BODY = '''<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TG95398C" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->'''
+
 COUNTER_JS = """<script>document.querySelectorAll('.zikr[data-n]').forEach(function(c){var n=+c.dataset.n,b=c.querySelector('.n');c.addEventListener('click',function(){if(n<=0)return;n--;if(b)b.textContent=n>0?n+' ×':'✓';if(n===0)c.classList.add('done')})});</script>"""
 
 
@@ -117,6 +124,7 @@ def page(path, title, desc, body, crumbs, active='', jsonld=None, lang='ar', ext
     out = f"""<!doctype html>
 <html lang="{lang}" dir="{'rtl' if lang == 'ar' else 'ltr'}">
 <head>
+{GTM_HEAD}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{e(title)}</title>
@@ -138,6 +146,7 @@ def page(path, title, desc, body, crumbs, active='', jsonld=None, lang='ar', ext
 <script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>
 </head>
 <body>
+{GTM_BODY}
 <header class="top"><div class="in"><a class="logo" href="/"><img src="/icon-192.png" alt="">ختمة · Khatmah</a><nav>{nav}</nav></div></header>
 <main>
 <div class="crumbs">{crumb_html}</div>
