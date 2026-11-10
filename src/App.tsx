@@ -495,6 +495,7 @@ export default function App() {
               ? khatma.resumeMarker.verseKey
               : undefined
           }
+          detailsOpen={verseModal.isOpen}
           onSelectVerseForDetails={(verseKey, textArabic, surahNum, verseNum, audioUrl) => {
             setVerseModal({
               isOpen: true,

@@ -14,6 +14,8 @@ import {
 import confetti from 'canvas-confetti';
 import { 
   fetchCondensedPageFull, 
+  getCondensedPageSync,
+  prefetchJuz,
   StandardPageVerses 
 } from '../services/quranApiService';
 import { getSurahByNumber } from '../data/surahsData';
@@ -38,6 +40,8 @@ interface QuranReaderProps {
   onSelectVerseForDetails: (verseKey: string, textArabic: string, surahNum: number, verseNum: number, audioUrl?: string) => void;
   /** Verset du signet de reprise sur cette page (s'il y en a un). */
   resumeVerseKey?: string;
+  /** Fenêtre tafsir/détails du verset ouverte (pour retrouver le verset au retour). */
+  detailsOpen?: boolean;
 }
 
 // Temps minimal sur une page pour qu'elle soit comptée automatiquement en passant à la suivante.
@@ -56,15 +60,17 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
   onToggleBookmark,
   onUpdateFontSize,
   onSelectVerseForDetails,
-  resumeVerseKey
+  resumeVerseKey,
+  detailsOpen = false
 }) => {
   const t = TRANSLATIONS[language];
   const isRtl = language === 'ar';
   const overallPage = (juzNumber - 1) * 5 + pageIndex;
   const progressPercent = Math.round((overallPage / 150) * 100);
 
-  const [fullPages, setFullPages] = useState<StandardPageVerses[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  // Page déjà téléchargée : affichage immédiat, sans écran de chargement.
+  const [fullPages, setFullPages] = useState<StandardPageVerses[]>(() => getCondensedPageSync(juzNumber, pageIndex)?.standardPages ?? []);
+  const [loading, setLoading] = useState<boolean>(() => !getCondensedPageSync(juzNumber, pageIndex));
   const [audioPlayingKey, setAudioPlayingKey] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -102,6 +108,28 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
     return () => clearTimeout(t);
   }, [loading, resumeVerseKey, juzNumber, pageIndex]);
   useEffect(() => { refitTries.current = 0; }, [juzNumber, pageIndex, settings.fontSize]);
+  // Verset ouvert pour le tafsir : il reste surligné pendant la lecture du tafsir et ~5 s après
+  // le retour, pour retrouver tout de suite où l'on en était, puis la couleur s'efface doucement.
+  const tappedVerseKey = useRef<string | null>(null);
+  const [returnVerseKey, setReturnVerseKey] = useState<string | null>(null);
+  const wasDetailsOpen = useRef<boolean>(false);
+  useEffect(() => {
+    if (detailsOpen) {
+      wasDetailsOpen.current = true;
+      if (tappedVerseKey.current) setReturnVerseKey(tappedVerseKey.current);
+      return;
+    }
+    if (!wasDetailsOpen.current) return;
+    wasDetailsOpen.current = false;
+    const key = tappedVerseKey.current;
+    if (!key) return;
+    setReturnVerseKey(key);
+    const el = contentRef.current?.querySelector(`[data-vk="${key}"]`) as HTMLElement | null;
+    el?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    const t = setTimeout(() => setReturnVerseKey(null), 5000);
+    return () => clearTimeout(t);
+  }, [detailsOpen]);
+  useEffect(() => { setReturnVerseKey(null); tappedVerseKey.current = null; }, [juzNumber, pageIndex]);
   // Vraies pages du mushaf de Médine couvertes par cette page condensée (ex. « 22–25 »).
   const mushafRange = fullPages.length
     ? fullPages[0].pageNumber === fullPages[fullPages.length - 1].pageNumber
@@ -120,7 +148,6 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
   // Load verses of the standard pages mapped to this 1 digital page
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
     setLoadError(false);
 
     if (audioRef.current) {
@@ -128,11 +155,23 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
       setAudioPlayingKey(null);
     }
 
+    // Page déjà en mémoire (préchargée) : on l'affiche tout de suite, sans moulinette.
+    const ready = getCondensedPageSync(juzNumber, pageIndex);
+    if (ready) {
+      setFullPages(ready.standardPages);
+      setLoading(false);
+      prefetchJuz(juzNumber);
+      return () => { cancelled = true; };
+    }
+
+    setLoading(true);
     fetchCondensedPageFull(juzNumber, pageIndex)
       .then(res => {
         if (!cancelled) {
           setFullPages(res.standardPages);
           setLoading(false);
+          // Le reste du Juz (et le début du suivant) se télécharge en arrière-plan.
+          prefetchJuz(juzNumber);
         }
       })
       .catch(err => {
@@ -150,10 +189,21 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
   }, [juzNumber, pageIndex, retryTick]);
 
   // Recalculate optimal font size & line spacing so text EXPANDS to fill the available height with ZERO scrolling
-  const recalculateFontSize = useCallback(() => {
+  // Clé du dernier calcul (page affichée + taille de l'écran + état des polices) : on ne refait pas
+  // ce calcul coûteux s'il n'y a rien de nouveau, pour que le changement de page soit instantané.
+  const lastFitKey = useRef<string>('');
+  const lastFitFont = useRef<number>(0);
+  const recalculateFontSize = useCallback((force: boolean = false) => {
     if (!containerRef.current || !contentRef.current) return;
     const container = containerRef.current;
     const content = contentRef.current;
+    const vks = content.querySelectorAll('[data-vk]');
+    const fitKey = [
+      vks[0]?.getAttribute('data-vk'), vks.length, container.clientWidth, container.clientHeight,
+      document.fonts?.status, settings.fontSize, autoFitEnabled
+    ].join('|');
+    if (!force && fitKey === lastFitKey.current) return;
+    lastFitKey.current = fitKey;
 
     if (!autoFitEnabled) {
       setEffectiveFontSize(settings.fontSize);
@@ -180,26 +230,31 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
     const baseLH = isMobile ? 1.52 : isTablet ? 1.58 : 1.62;
     content.style.lineHeight = String(baseLH);
 
-    // Search range for font size
-    let low = isMobile ? 9.5 : 12.5;
-    let high = isMobile ? 24.0 : 42.0;
-    let bestFont = low;
-
-    // 12 precise binary search steps to find the largest readable font size
-    for (let i = 0; i < 12; i++) {
-      const mid = Number(((low + high) / 2).toFixed(2));
-      content.style.fontSize = `${mid}px`;
-      if (content.scrollHeight <= availHeight) {
-        bestFont = mid;
-        low = mid + 0.1;
-      } else {
-        high = mid - 0.1;
-      }
+    // Taille de police : la hauteur du texte varie à peu près comme le carré de la taille.
+    // On estime donc la bonne taille en 2 ou 3 mesures au lieu d'une longue recherche
+    // (chaque mesure oblige le navigateur à remettre toute la page en forme).
+    const minFont = isMobile ? 9.5 : 12.5;
+    const maxFont = isMobile ? 24.0 : 42.0;
+    const clampF = (v: number) => Math.min(maxFont, Math.max(minFont, Number(v.toFixed(2))));
+    const heightAt = (size: number) => { content.style.fontSize = `${size}px`; return content.scrollHeight; };
+    let bestFont = clampF(lastFitFont.current || (isMobile ? 16 : 24));
+    let h = heightAt(bestFont);
+    for (let i = 0; i < 3; i++) {
+      const fitsNow = h <= availHeight;
+      // déjà à moins de 2 % sous la limite, ou bloqué aux bornes : c'est la bonne taille
+      if ((fitsNow && h >= availHeight * 0.96) || (fitsNow && bestFont >= maxFont) || (!fitsNow && bestFont <= minFont)) break;
+      const next = clampF(bestFont * Math.sqrt((availHeight * 0.98) / h));
+      if (Math.abs(next - bestFont) < 0.05) break;
+      bestFont = next;
+      h = heightAt(bestFont);
     }
-
-    // Apply the best font size
-    content.style.fontSize = `${bestFont}px`;
-    const measuredHeight = content.scrollHeight;
+    // Garde-fou : on ne garde jamais une taille qui dépasse (petits pas vers le bas).
+    for (let i = 0; i < 6 && h > availHeight && bestFont > minFont; i++) {
+      bestFont = clampF(bestFont * 0.97);
+      h = heightAt(bestFont);
+    }
+    lastFitFont.current = bestFont;
+    const measuredHeight = h;
 
     // DYNAMIC HEIGHT EXPANSION:
     // If the text doesn't fill the vertical space (leaves empty space at the bottom),
@@ -208,17 +263,18 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
     const targetFillHeight = availHeight * 0.95;
 
     if (measuredHeight > 0 && measuredHeight < targetFillHeight) {
-      const ratio = targetFillHeight / measuredHeight;
       const maxAllowedLH = isMobile ? 2.05 : isTablet ? 2.35 : 2.65;
-      let trialLH = Math.min(maxAllowedLH, Number((baseLH * ratio).toFixed(2)));
-
-      // Step down slightly if trialLH overshoots availHeight
+      // La hauteur est proportionnelle à l'interligne (même nombre de lignes) : calcul direct.
+      let trialLH = Math.min(maxAllowedLH, Number((baseLH * targetFillHeight / measuredHeight).toFixed(3)));
       content.style.lineHeight = String(trialLH);
-      while (content.scrollHeight > availHeight && trialLH > baseLH) {
-        trialLH = Number((trialLH - 0.04).toFixed(2));
+      let hl = content.scrollHeight;
+      for (let i = 0; i < 4 && hl > availHeight && trialLH > baseLH; i++) {
+        trialLH = Math.max(baseLH, Number((trialLH * (availHeight * 0.97) / hl).toFixed(3)));
         content.style.lineHeight = String(trialLH);
+        hl = content.scrollHeight;
       }
-      bestLH = Math.max(baseLH, trialLH);
+      bestLH = Math.max(baseLH, Number(trialLH.toFixed(2)));
+      if (hl > availHeight) bestLH = baseLH;
     }
 
     content.style.fontSize = `${bestFont}px`;
@@ -241,10 +297,10 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
       // fonts.ready peut se résoudre avant que la police du Coran soit demandée : on la charge explicitement.
       if (document.fonts && document.fonts.ready) {
         document.fonts.ready.then(() => {
-          recalculateFontSize();
+          recalculateFontSize(true);
         });
         // Le sous-ensemble ARABE de la police se charge à part : on le demande avec du texte arabe.
-        document.fonts.load("20px 'Amiri Quran'", 'بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ').then(() => recalculateFontSize()).catch(() => {});
+        document.fonts.load("20px 'Amiri Quran'", 'بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ').then(() => recalculateFontSize(true)).catch(() => {});
       }
       // Passes de contrôle : la police et les images de l'en-tête peuvent finir de charger plus tard.
       const t4 = setTimeout(recalculateFontSize, 700);
@@ -276,7 +332,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
       const fitsNow = !over && content.scrollHeight < container.clientHeight - 24;
       if (autoFitEnabled && (over ? !overflowing : overflowing && fitsNow) && refitTries.current < 4) {
         refitTries.current += 1;
-        recalculateFontSize();
+        recalculateFontSize(true);
       } else if (over && !overflowing) {
         setOverflowing(true);
       }
@@ -305,12 +361,13 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
     }
     // La police du Coran arrive parfois après le premier calcul : on recalcule à chaque chargement.
     const fonts = (document as any).fonts;
-    fonts?.addEventListener?.('loadingdone', handleResize);
+    const onFontsLoaded = () => recalculateFontSize(true);
+    fonts?.addEventListener?.('loadingdone', onFontsLoaded);
 
     return () => {
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('orientationchange', handleResize);
-      fonts?.removeEventListener?.('loadingdone', handleResize);
+      fonts?.removeEventListener?.('loadingdone', onFontsLoaded);
       if (ro) ro.disconnect();
     };
   }, [recalculateFontSize]);
@@ -794,14 +851,17 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                       <span
                         data-vk={verse.verseKey}
                         onClick={() => {
+                          tappedVerseKey.current = verse.verseKey;
                           if (visualMode === 'focus') {
                             setFocusedVerseKey(verse.verseKey);
                           }
                           onSelectVerseForDetails(verse.verseKey, verse.textUthmani, verse.surahNumber, verse.verseNumber, verse.audioUrl);
                         }}
-                        className={`cursor-pointer rounded-sm px-0.5 transition-colors inline ${
+                        className={`cursor-pointer rounded-sm px-0.5 transition-colors duration-1000 inline ${
                           isVersePlaying 
                             ? 'bg-amber-300/50 dark:bg-amber-900/40 font-bold' 
+                            : returnVerseKey === verse.verseKey
+                            ? 'bg-emerald-200/70 dark:bg-emerald-800/50 ring-1 ring-emerald-600/40' 
                             : resumeVerseKey === verse.verseKey
                             ? `bg-amber-200/60 dark:bg-amber-900/40 ring-1 ring-amber-500/60 ${resumeGlow ? 'animate-pulse' : ''}`
                             : isFocused

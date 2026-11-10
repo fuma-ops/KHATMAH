@@ -163,31 +163,81 @@ export async function fetchStandardPage(pageNumber: number): Promise<StandardPag
  * by loading and merging all standard pages that make up this section (e.g. pages 1, 2, 3, 4).
  * ZERO VERSES OMITTED!
  */
-export async function fetchCondensedPageFull(
-  juzNumber: number, 
-  pageIndex: number
-): Promise<{ standardPages: StandardPageVerses[]; totalVersesCount: number }> {
-  const stdPagesNumbers = getStandardPagesForCondensed(juzNumber, pageIndex);
-  
-  // Fetch all standard pages in parallel
-  const rawPages = await Promise.all(
-    stdPagesNumbers.map(p => fetchStandardPage(p))
-  );
+function mergeCondensed(rawPages: StandardPageVerses[], juzNumber: number) {
   // Pages partagées entre deux Juz : on ne garde que les versets du Juz lu.
   const standardPages = rawPages
     .map(p => ({ ...p, verses: p.verses.filter(v => !v.juzNumber || v.juzNumber === juzNumber) }))
     .filter(p => p.verses.length > 0);
-
   const totalVersesCount = standardPages.reduce((acc, p) => acc + p.verses.length, 0);
+  return { standardPages, totalVersesCount };
+}
 
-  // Background pre-fetch next page to guarantee zero-latency navigation
-  if (pageIndex < 5) {
-    const nextPages = getStandardPagesForCondensed(juzNumber, pageIndex + 1);
-    nextPages.forEach(p => fetchStandardPage(p).catch(() => {}));
+/** Page standard déjà en mémoire ou dans le stockage local (lecture synchrone, sans réseau). */
+function readStandardPageSync(pageNumber: number): StandardPageVerses | null {
+  const mem = pageCache.get(pageNumber);
+  if (mem) return mem;
+  try {
+    const cached = localStorage.getItem(`mushaf_std_page_v2_${pageNumber}`);
+    if (cached) {
+      const parsed = JSON.parse(cached) as StandardPageVerses;
+      pageCache.set(pageNumber, parsed);
+      return parsed;
+    }
+  } catch {}
+  return null;
+}
+
+/**
+ * Page condensée immédiatement disponible (déjà téléchargée) : permet d'afficher la page
+ * suivante sans écran de chargement. Renvoie null si une des pages standard manque encore.
+ */
+export function getCondensedPageSync(
+  juzNumber: number,
+  pageIndex: number
+): { standardPages: StandardPageVerses[]; totalVersesCount: number } | null {
+  const raw: StandardPageVerses[] = [];
+  for (const p of getStandardPagesForCondensed(juzNumber, pageIndex)) {
+    const page = readStandardPageSync(p);
+    if (!page) return null;
+    raw.push(page);
   }
+  return mergeCondensed(raw, juzNumber);
+}
 
-  return {
-    standardPages,
-    totalVersesCount
+/**
+ * Télécharge en arrière-plan tout le Juz en cours (et le début du suivant) pour que le
+ * changement de page soit instantané. Deux requêtes à la fois pour ne pas gêner la page affichée.
+ */
+const prefetchedJuz = new Set<number>();
+export function prefetchJuz(juzNumber: number): void {
+  if (prefetchedJuz.has(juzNumber)) return;
+  prefetchedJuz.add(juzNumber);
+  const pages: number[] = [];
+  for (let i = 1; i <= 5; i++) pages.push(...getStandardPagesForCondensed(juzNumber, i));
+  if (juzNumber < 30) pages.push(...getStandardPagesForCondensed(juzNumber + 1, 1));
+  if (juzNumber > 1) pages.push(...getStandardPagesForCondensed(juzNumber - 1, 5));
+  const todo = [...new Set(pages)].filter(p => !readStandardPageSync(p));
+  const worker = async () => {
+    while (todo.length) {
+      const p = todo.shift()!;
+      // Hors ligne : on autorisera un nouvel essai au prochain changement de page.
+      await fetchStandardPage(p).catch(() => { prefetchedJuz.delete(juzNumber); });
+    }
   };
+  worker();
+  worker();
+}
+
+/**
+ * Fetches the COMPLETE verses of a 5-page condensed section
+ * by loading and merging all standard pages that make up this section (e.g. pages 1, 2, 3, 4).
+ * ZERO VERSES OMITTED!
+ */
+export async function fetchCondensedPageFull(
+  juzNumber: number,
+  pageIndex: number
+): Promise<{ standardPages: StandardPageVerses[]; totalVersesCount: number }> {
+  const stdPagesNumbers = getStandardPagesForCondensed(juzNumber, pageIndex);
+  const rawPages = await Promise.all(stdPagesNumbers.map(p => fetchStandardPage(p)));
+  return mergeCondensed(rawPages, juzNumber);
 }
