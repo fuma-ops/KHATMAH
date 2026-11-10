@@ -1,8 +1,6 @@
-import React, { useState, useEffect, useRef, useLayoutEffect, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect, useCallback, useMemo } from 'react';
 import { 
   ArrowLeft, 
-  ChevronLeft, 
-  ChevronRight, 
   Bookmark, 
   CheckCircle2, 
   Maximize2,
@@ -523,10 +521,14 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
     ? 'bg-[#FAF6EB] text-[#24211e]' 
     : 'bg-[#FAF8F5] text-[#1c1917]';
 
-  const isPrevDisabled = juzNumber === 1 && pageIndex === 1;
-  // Dernière page : le bouton « suivant » termine la Khatma (puis dua de fin de Khatma).
-  const isNextDisabled = juzNumber === 30 && pageIndex === 5 && isCompleted;
   const isDark = settings.theme === 'dark';
+
+  // Sourate(s) de la page affichée (nom arabe), pour toujours savoir où l'on est.
+  const surahNamesOnPage = useMemo(() => {
+    const nums: number[] = [];
+    for (const p of fullPages) for (const v of p.verses) if (!nums.includes(v.surahNumber)) nums.push(v.surahNumber);
+    return nums.map((n) => getSurahByNumber(n)?.nameArabic).filter((x): x is string => !!x);
+  }, [fullPages]);
 
   return (
     <div className={`h-[100dvh] max-h-[100dvh] w-full overflow-hidden flex flex-col justify-start ${bgClass} transition-colors select-text relative`}>
@@ -544,42 +546,30 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
           </button>
         </div>
 
-        {/* Center: Simple Navigation Arrows ("Flèches") & Page Info */}
-        <div className="flex items-center gap-1 sm:gap-2">
-          {/* Previous Page Arrow */}
-          <button
-            onClick={handlePrev}
-            disabled={isPrevDisabled}
-            className="p-1 sm:p-1.5 rounded-lg border border-stone-300/80 dark:border-stone-700 hover:bg-emerald-800/10 dark:hover:bg-emerald-400/10 text-stone-700 dark:text-stone-200 disabled:opacity-20 disabled:pointer-events-none transition-colors"
-            title={t.prevPage}
-          >
-            <ChevronLeft className={`w-4 h-4 sm:w-4.5 sm:h-4.5 ${isRtl ? 'rotate-180' : ''}`} />
-          </button>
-
-          {/* Position indicator */}
+        {/* Center: sourate(s) de la page + position (la navigation se fait en glissant) */}
+        <div className="flex items-center gap-1.5 min-w-0 select-none">
+          {surahNamesOnPage.length > 0 && (
+            <span
+              className="font-quran text-[14px] sm:text-[16px] font-bold text-emerald-900 dark:text-emerald-300 truncate max-w-[34vw] sm:max-w-none leading-none pb-0.5"
+              title={surahNamesOnPage.join(' · ')}
+              dir="rtl"
+            >
+              {surahNamesOnPage.length > 1 ? surahNamesOnPage.join(' · ') : `سورة ${surahNamesOnPage[0]}`}
+            </span>
+          )}
           <div
-            className="flex items-center gap-1.5 tracking-wider font-mono text-[11px] sm:text-[13px] font-bold text-emerald-950 dark:text-emerald-300 px-1 select-none"
+            className="flex items-center gap-1 tracking-wider font-mono text-[10px] sm:text-[12px] font-bold text-stone-500 dark:text-stone-400 px-0.5 shrink-0"
             title={mushafRange ? (language === 'ar' ? `صفحات المصحف ${mushafRange}` : `Mushaf : pages ${mushafRange}`) : undefined}
           >
             <span>{t.juzLabel} {juzNumber}</span>
             <span className="opacity-30">|</span>
-            <span>{t.pageLabel} {pageIndex} / 5</span>
+            <span>{pageIndex}/5</span>
             {mushafRange && (
               <span className="hidden sm:inline font-sans font-medium text-[11px] text-stone-500 dark:text-stone-400">
                 ({language === 'ar' ? 'المصحف' : 'Mushaf'} {mushafRange})
               </span>
             )}
           </div>
-
-          {/* Next Page Arrow */}
-          <button
-            onClick={handleNext}
-            disabled={isNextDisabled}
-            className="p-1 sm:p-1.5 rounded-lg border border-stone-300/80 dark:border-stone-700 hover:bg-emerald-800/10 dark:hover:bg-emerald-400/10 text-stone-700 dark:text-stone-200 disabled:opacity-20 disabled:pointer-events-none transition-colors"
-            title={t.nextPage}
-          >
-            <ChevronRight className={`w-4 h-4 sm:w-4.5 sm:h-4.5 ${isRtl ? 'rotate-180' : ''}`} />
-          </button>
         </div>
 
         {/* Right Side: Page Complete Button, Reading Guide Mode, Auto-Fit, Font Zoom & Bookmark */}
