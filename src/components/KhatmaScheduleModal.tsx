@@ -10,7 +10,7 @@ import {
   Layers
 } from 'lucide-react';
 import { AppLanguage } from '../utils/translations';
-import { KhatmaState, KHATMA_PLANS_CONFIG } from '../services/khatmaService';
+import { KhatmaState, KHATMA_PLANS_CONFIG, juzPerDayLabel } from '../services/khatmaService';
 import { getPlanScheduleBreakdown, DayScheduleItem } from '../services/khatmaScheduleHelper';
 
 interface KhatmaScheduleModalProps {
@@ -110,7 +110,7 @@ export const KhatmaScheduleModal: React.FC<KhatmaScheduleModalProps> = ({
         <div className="px-5 py-3 bg-amber-100/40 dark:bg-stone-850/60 flex items-center justify-between text-xs text-stone-700 dark:text-stone-300">
           <div className="flex items-center gap-2">
             <Layers className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
-            <span className="font-semibold">{activePlanConfig.juzPerDayDesc}</span>
+            <span className="font-semibold">{juzPerDayLabel(activePlanConfig, language)}</span>
           </div>
           <div className="font-mono text-emerald-900 dark:text-emerald-300 font-bold">
             {schedule.length} {language === 'ar' ? 'يوماً' : 'jours'} · 150 {language === 'ar' ? 'صفحة' : 'pages'}

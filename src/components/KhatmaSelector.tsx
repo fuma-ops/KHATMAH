@@ -13,7 +13,8 @@ import {
   KHATMA_PLANS_CONFIG, 
   KhatmaPlanConfig, 
   KhatmaState, 
-  calculateRedistribution 
+  calculateRedistribution,
+  juzPerDayLabel
 } from '../services/khatmaService';
 import { getPlanScheduleBreakdown } from '../services/khatmaScheduleHelper';
 import { AppLanguage, TRANSLATIONS } from '../utils/translations';
@@ -96,7 +97,7 @@ export const KhatmaSelector: React.FC<KhatmaSelectorProps> = ({
                 </div>
 
                 <p className="text-xs text-stone-500 leading-relaxed">
-                  {plan.juzPerDayDesc}
+                  {juzPerDayLabel(plan, language)}
                 </p>
               </div>
 

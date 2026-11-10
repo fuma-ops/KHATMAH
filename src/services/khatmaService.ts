@@ -5,6 +5,8 @@ export interface KhatmaPlanConfig {
   nameKey: string;
   dailyPages: number;
   juzPerDayDesc: string;
+  juzPerDayDescAr: string;
+  juzPerDayDescEn: string;
   schedule: number[]; // exact pages per day array (length === durationDays, sum === 150)
 }
 
@@ -31,6 +33,8 @@ export const KHATMA_PLANS_CONFIG: KhatmaPlanConfig[] = [
     nameKey: '3 Days',
     dailyPages: 50,
     juzPerDayDesc: '10 Juz / jour (50 pages)',
+    juzPerDayDescAr: '10 أجزاء يومياً (50 صفحة)',
+    juzPerDayDescEn: '10 Juz / day (50 pages)',
     schedule: generateBalancedSchedule(3) // [50, 50, 50]
   },
   {
@@ -39,6 +43,8 @@ export const KHATMA_PLANS_CONFIG: KhatmaPlanConfig[] = [
     nameKey: '5 Days',
     dailyPages: 30,
     juzPerDayDesc: '6 Juz / jour (30 pages)',
+    juzPerDayDescAr: '6 أجزاء يومياً (30 صفحة)',
+    juzPerDayDescEn: '6 Juz / day (30 pages)',
     schedule: generateBalancedSchedule(5) // [30, 30, 30, 30, 30]
   },
   {
@@ -47,6 +53,8 @@ export const KHATMA_PLANS_CONFIG: KhatmaPlanConfig[] = [
     nameKey: '7 Days',
     dailyPages: 21,
     juzPerDayDesc: '4.3 Juz / jour (21–22 pages)',
+    juzPerDayDescAr: '4.3 أجزاء يومياً (21–22 صفحة)',
+    juzPerDayDescEn: '4.3 Juz / day (21–22 pages)',
     schedule: generateBalancedSchedule(7) // [22, 22, 22, 21, 21, 21, 21] sum = 150
   },
   {
@@ -55,6 +63,8 @@ export const KHATMA_PLANS_CONFIG: KhatmaPlanConfig[] = [
     nameKey: '9 Days',
     dailyPages: 17,
     juzPerDayDesc: '3.3 Juz / jour (16–17 pages)',
+    juzPerDayDescAr: '3.3 أجزاء يومياً (16–17 صفحة)',
+    juzPerDayDescEn: '3.3 Juz / day (16–17 pages)',
     schedule: generateBalancedSchedule(9) // [17, 17, 17, 17, 17, 17, 16, 16, 16] sum = 150
   },
   {
@@ -63,6 +73,8 @@ export const KHATMA_PLANS_CONFIG: KhatmaPlanConfig[] = [
     nameKey: '15 Days',
     dailyPages: 10,
     juzPerDayDesc: '2 Juz / jour (10 pages)',
+    juzPerDayDescAr: 'جزءان يومياً (10 صفحات)',
+    juzPerDayDescEn: '2 Juz / day (10 pages)',
     schedule: generateBalancedSchedule(15) // 15 * 10 = 150
   },
   {
@@ -71,6 +83,8 @@ export const KHATMA_PLANS_CONFIG: KhatmaPlanConfig[] = [
     nameKey: '30 Days',
     dailyPages: 5,
     juzPerDayDesc: '1 Juz / jour (5 pages)',
+    juzPerDayDescAr: 'جزء واحد يومياً (5 صفحات)',
+    juzPerDayDescEn: '1 Juz / day (5 pages)',
     schedule: generateBalancedSchedule(30) // 30 * 5 = 150
   }
 ];
@@ -201,4 +215,9 @@ export function getTodaysAssignedTarget(khatma: KhatmaState): {
     completedToday,
     progressPercent
   };
+}
+
+/** Description « juz par jour » dans la langue de l'interface. */
+export function juzPerDayLabel(plan: KhatmaPlanConfig, language: string): string {
+  return language === 'ar' ? plan.juzPerDayDescAr : language === 'en' ? plan.juzPerDayDescEn : plan.juzPerDayDesc;
 }
