@@ -490,6 +490,7 @@ export default function App() {
           onToggleComplete={handleToggleCompletePage}
           onToggleBookmark={handleToggleBookmark}
           onUpdateFontSize={(fontSize) => setSettings(s => ({ ...s, fontSize }))}
+          onUpdateTheme={(theme) => setSettings(s => ({ ...s, theme }))}
           resumeVerseKey={
             khatma.resumeMarker && khatma.resumeMarker.juz === khatma.currentPosition.juz && khatma.resumeMarker.page === khatma.currentPosition.page
               ? khatma.resumeMarker.verseKey

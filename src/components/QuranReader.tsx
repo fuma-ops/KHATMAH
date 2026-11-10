@@ -21,7 +21,13 @@ import { toArabicNumerals } from '../utils/storage';
 import { AppLanguage, TRANSLATIONS } from '../utils/translations';
 import { ReadingSettings } from '../types/quran';
 
-export type VisualGuideMode = 'classic' | 'alternating' | 'focus';
+export type VisualGuideMode = 'classic' | 'alternating' | 'colored' | 'focus';
+
+// Versets colorés : chaque verset prend à tour de rôle une encre de couleur (lisible, jamais fluo).
+const VERSE_COLORS_LIGHT = ['#1e40af', '#166534', '#9f1239', '#6b21a8', '#0f766e', '#92400e'];
+const VERSE_COLORS_DARK = ['#93c5fd', '#86efac', '#fda4af', '#d8b4fe', '#5eead4', '#fcd34d'];
+const VISUAL_MODE_KEY = 'khatmah:visual-mode';
+const VISUAL_MODES: VisualGuideMode[] = ['classic', 'alternating', 'colored', 'focus'];
 
 interface QuranReaderProps {
   juzNumber: number;
@@ -35,6 +41,8 @@ interface QuranReaderProps {
   onToggleComplete: (juz: number, page: number) => void;
   onToggleBookmark: (juz: number, page: number) => void;
   onUpdateFontSize: (size: number) => void;
+  /** Changer le thème (parchemin, sombre, blanc) directement depuis le lecteur. */
+  onUpdateTheme?: (theme: ReadingSettings['theme']) => void;
   onSelectVerseForDetails: (verseKey: string, textArabic: string, surahNum: number, verseNum: number, audioUrl?: string) => void;
   /** Verset du signet de reprise sur cette page (s'il y en a un). */
   resumeVerseKey?: string;
@@ -57,6 +65,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
   onToggleComplete,
   onToggleBookmark,
   onUpdateFontSize,
+  onUpdateTheme,
   onSelectVerseForDetails,
   resumeVerseKey,
   detailsOpen = false
@@ -139,7 +148,23 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
   // 'classic' = 100% noble black ink + subtle golden ayah markers
   // 'alternating' = soft ton-sur-ton contrast between verses (deep ink / soft charcoal)
   // 'focus' = gentle amber halo on the active verse being read
-  const [visualMode, setVisualMode] = useState<VisualGuideMode>('classic');
+  const [visualMode, setVisualModeState] = useState<VisualGuideMode>(() => {
+    try {
+      const v = localStorage.getItem(VISUAL_MODE_KEY) as VisualGuideMode | null;
+      return v && VISUAL_MODES.includes(v) ? v : 'classic';
+    } catch {
+      return 'classic';
+    }
+  });
+  // Le mode choisi est retenu pour les prochaines lectures.
+  const setVisualMode = (m: VisualGuideMode) => {
+    setVisualModeState(m);
+    try {
+      localStorage.setItem(VISUAL_MODE_KEY, m);
+    } catch {
+      /* stockage indisponible : le mode reste valable pour cette session */
+    }
+  };
   const [focusedVerseKey, setFocusedVerseKey] = useState<string | null>(null);
   const [isGuideMenuOpen, setIsGuideMenuOpen] = useState<boolean>(false);
 
@@ -601,7 +626,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
             >
               <Eye className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
               <span className="hidden md:inline">
-                {visualMode === 'classic' ? 'Sobre' : visualMode === 'alternating' ? 'Nuances' : 'Focus'}
+                {visualMode === 'classic' ? 'Sobre' : visualMode === 'alternating' ? 'Nuances' : visualMode === 'colored' ? 'Couleurs' : 'Focus'}
               </span>
             </button>
 
@@ -613,8 +638,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                 }`}
               >
                 <div className="font-bold text-stone-800 dark:text-stone-200 mb-2 pb-1.5 border-b border-black/5 dark:border-white/10 flex items-center justify-between">
-                  <span>Confort de lecture</span>
-                  <span className="text-[10px] text-stone-400 font-normal">Sans couleur criarde</span>
+                  <span>{language === 'ar' ? 'راحة القراءة' : language === 'en' ? 'Reading comfort' : 'Confort de lecture'}</span>
                 </div>
 
                 <div className="space-y-1.5">
@@ -656,7 +680,32 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                     </div>
                   </button>
 
-                  {/* Mode 3: Interactive Focus */}
+                  {/* Mode 3: Versets colorés */}
+                  <button
+                    onClick={() => {
+                      setVisualMode('colored');
+                      setIsGuideMenuOpen(false);
+                    }}
+                    className={`w-full p-2 rounded-xl text-left flex items-start gap-2.5 transition-colors ${
+                      visualMode === 'colored'
+                        ? 'bg-emerald-800/10 text-emerald-900 dark:text-emerald-300 font-bold border border-emerald-800/20'
+                        : 'hover:bg-black/5 dark:hover:bg-white/5 text-stone-700 dark:text-stone-300'
+                    }`}
+                  >
+                    <span className="mt-1 shrink-0 flex gap-0.5">
+                      {(isDark ? VERSE_COLORS_DARK : VERSE_COLORS_LIGHT).slice(0, 4).map((c) => (
+                        <span key={c} className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: c }} />
+                      ))}
+                    </span>
+                    <div>
+                      <div className="font-semibold">{language === 'ar' ? 'آيات ملوّنة' : language === 'en' ? 'Coloured verses' : 'Versets colorés'}</div>
+                      <div className="text-[10px] opacity-75 font-normal">
+                        {language === 'ar' ? 'كل آية بلون مختلف لتمييزها بسهولة.' : language === 'en' ? 'Each verse in its own colour, easy to follow.' : 'Chaque verset dans une couleur différente, facile à suivre.'}
+                      </div>
+                    </div>
+                  </button>
+
+                  {/* Mode 4: Interactive Focus */}
                   <button
                     onClick={() => {
                       setVisualMode('focus');
@@ -675,6 +724,30 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                     </div>
                   </button>
                 </div>
+
+                {/* Thème de lecture : parchemin, sombre, blanc */}
+                {onUpdateTheme && (
+                  <div className="mt-3 pt-2.5 border-t border-black/5 dark:border-white/10">
+                    <div className="font-bold text-stone-800 dark:text-stone-200 mb-2">{language === 'ar' ? 'المظهر' : language === 'en' ? 'Theme' : 'Thème'}</div>
+                    <div className="grid grid-cols-3 gap-1.5">
+                      {([
+                        ['mushaf', language === 'ar' ? 'رَقّ' : language === 'en' ? 'Parchment' : 'Parchemin', 'bg-[#FAF6EB] text-[#24211e] border-[#E8DFC9]'],
+                        ['dark', language === 'ar' ? 'داكن' : language === 'en' ? 'Dark' : 'Sombre', 'bg-[#141210] text-stone-100 border-stone-700'],
+                        ['white', language === 'ar' ? 'أبيض' : language === 'en' ? 'White' : 'Blanc', 'bg-white text-stone-900 border-stone-200'],
+                      ] as const).map(([id, label, cls]) => (
+                        <button
+                          key={id}
+                          onClick={() => onUpdateTheme(id)}
+                          className={`rounded-xl border px-1.5 py-2 text-[11px] font-bold transition-all active:scale-95 ${cls} ${
+                            settings.theme === id ? 'ring-2 ring-emerald-600' : 'opacity-85 hover:opacity-100'
+                          }`}
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -803,8 +876,12 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
 
                   // Ton-sur-ton alternation: micro-contrast without any rainbow color
                   // Odd verses in deep rich ink, even verses in slightly softened charcoal
-                  let textColor = undefined;
-                  if (visualMode === 'alternating') {
+                  let textColor: string | undefined = undefined;
+                  const marked = returnVerseKey === verse.verseKey || resumeVerseKey === verse.verseKey || isVersePlaying;
+                  if (visualMode === 'colored' && !marked) {
+                    const palette = isDark ? VERSE_COLORS_DARK : VERSE_COLORS_LIGHT;
+                    textColor = palette[(verse.verseNumber - 1) % palette.length];
+                  } else if (visualMode === 'alternating' && !marked) {
                     if (isDark) {
                       textColor = vIdx % 2 === 0 ? '#f5f5f4' : '#d6d3d1';
                     } else {
