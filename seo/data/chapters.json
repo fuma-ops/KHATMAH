@@ -1,0 +1,2025 @@
+{
+"chapters": [
+{
+"id": 1,
+"slug": null,
+"name_ar": "الفاتحة",
+"name_simple": "Al-Fatihah",
+"name_fr": "L'ouverture",
+"name_en": "The Opener",
+"place": "makkah",
+"order": 5,
+"verses": 7,
+"pages": [
+1,
+1
+],
+"bismillah": false
+},
+{
+"id": 2,
+"slug": null,
+"name_ar": "البقرة",
+"name_simple": "Al-Baqarah",
+"name_fr": "La vache",
+"name_en": "The Cow",
+"place": "madinah",
+"order": 87,
+"verses": 286,
+"pages": [
+2,
+49
+],
+"bismillah": true
+},
+{
+"id": 3,
+"slug": null,
+"name_ar": "آل عمران",
+"name_simple": "Ali 'Imran",
+"name_fr": "La famille de 'imran",
+"name_en": "Family of Imran",
+"place": "madinah",
+"order": 89,
+"verses": 200,
+"pages": [
+50,
+76
+],
+"bismillah": true
+},
+{
+"id": 4,
+"slug": null,
+"name_ar": "النساء",
+"name_simple": "An-Nisa",
+"name_fr": "Les femmes",
+"name_en": "The Women",
+"place": "madinah",
+"order": 92,
+"verses": 176,
+"pages": [
+77,
+106
+],
+"bismillah": true
+},
+{
+"id": 5,
+"slug": null,
+"name_ar": "المائدة",
+"name_simple": "Al-Ma'idah",
+"name_fr": "La table servie",
+"name_en": "The Table Spread",
+"place": "madinah",
+"order": 112,
+"verses": 120,
+"pages": [
+106,
+127
+],
+"bismillah": true
+},
+{
+"id": 6,
+"slug": null,
+"name_ar": "الأنعام",
+"name_simple": "Al-An'am",
+"name_fr": "Les bestiaux",
+"name_en": "The Cattle",
+"place": "makkah",
+"order": 55,
+"verses": 165,
+"pages": [
+128,
+150
+],
+"bismillah": true
+},
+{
+"id": 7,
+"slug": null,
+"name_ar": "الأعراف",
+"name_simple": "Al-A'raf",
+"name_fr": "Al-A'raf",
+"name_en": "The Heights",
+"place": "makkah",
+"order": 39,
+"verses": 206,
+"pages": [
+151,
+176
+],
+"bismillah": true
+},
+{
+"id": 8,
+"slug": null,
+"name_ar": "الأنفال",
+"name_simple": "Al-Anfal",
+"name_fr": "Le butin",
+"name_en": "The Spoils of War",
+"place": "madinah",
+"order": 88,
+"verses": 75,
+"pages": [
+177,
+186
+],
+"bismillah": true
+},
+{
+"id": 9,
+"slug": null,
+"name_ar": "التوبة",
+"name_simple": "At-Tawbah",
+"name_fr": "Le repentir",
+"name_en": "The Repentance",
+"place": "madinah",
+"order": 113,
+"verses": 129,
+"pages": [
+187,
+207
+],
+"bismillah": false
+},
+{
+"id": 10,
+"slug": null,
+"name_ar": "يونس",
+"name_simple": "Yunus",
+"name_fr": "Jonas",
+"name_en": "Jonah",
+"place": "makkah",
+"order": 51,
+"verses": 109,
+"pages": [
+208,
+221
+],
+"bismillah": true
+},
+{
+"id": 11,
+"slug": null,
+"name_ar": "هود",
+"name_simple": "Hud",
+"name_fr": "Houd",
+"name_en": "Hud",
+"place": "makkah",
+"order": 52,
+"verses": 123,
+"pages": [
+221,
+235
+],
+"bismillah": true
+},
+{
+"id": 12,
+"slug": null,
+"name_ar": "يوسف",
+"name_simple": "Yusuf",
+"name_fr": "Joseph",
+"name_en": "Joseph",
+"place": "makkah",
+"order": 53,
+"verses": 111,
+"pages": [
+235,
+248
+],
+"bismillah": true
+},
+{
+"id": 13,
+"slug": null,
+"name_ar": "الرعد",
+"name_simple": "Ar-Ra'd",
+"name_fr": "Le tonnerre",
+"name_en": "The Thunder",
+"place": "madinah",
+"order": 96,
+"verses": 43,
+"pages": [
+249,
+255
+],
+"bismillah": true
+},
+{
+"id": 14,
+"slug": null,
+"name_ar": "ابراهيم",
+"name_simple": "Ibrahim",
+"name_fr": "Abraham",
+"name_en": "Abraham",
+"place": "makkah",
+"order": 72,
+"verses": 52,
+"pages": [
+255,
+261
+],
+"bismillah": true
+},
+{
+"id": 15,
+"slug": null,
+"name_ar": "الحجر",
+"name_simple": "Al-Hijr",
+"name_fr": "Al-Hijr",
+"name_en": "The Rocky Tract",
+"place": "makkah",
+"order": 54,
+"verses": 99,
+"pages": [
+262,
+267
+],
+"bismillah": true
+},
+{
+"id": 16,
+"slug": null,
+"name_ar": "النحل",
+"name_simple": "An-Nahl",
+"name_fr": "Les abeilles",
+"name_en": "The Bee",
+"place": "makkah",
+"order": 70,
+"verses": 128,
+"pages": [
+267,
+281
+],
+"bismillah": true
+},
+{
+"id": 17,
+"slug": null,
+"name_ar": "الإسراء",
+"name_simple": "Al-Isra",
+"name_fr": "Le voyage nocturne",
+"name_en": "The Night Journey",
+"place": "makkah",
+"order": 50,
+"verses": 111,
+"pages": [
+282,
+293
+],
+"bismillah": true
+},
+{
+"id": 18,
+"slug": null,
+"name_ar": "الكهف",
+"name_simple": "Al-Kahf",
+"name_fr": "La caverne",
+"name_en": "The Cave",
+"place": "makkah",
+"order": 69,
+"verses": 110,
+"pages": [
+293,
+304
+],
+"bismillah": true
+},
+{
+"id": 19,
+"slug": null,
+"name_ar": "مريم",
+"name_simple": "Maryam",
+"name_fr": "Marie",
+"name_en": "Mary",
+"place": "makkah",
+"order": 44,
+"verses": 98,
+"pages": [
+305,
+312
+],
+"bismillah": true
+},
+{
+"id": 20,
+"slug": null,
+"name_ar": "طه",
+"name_simple": "Taha",
+"name_fr": "Ta-Ha",
+"name_en": "Ta-Ha",
+"place": "makkah",
+"order": 45,
+"verses": 135,
+"pages": [
+312,
+321
+],
+"bismillah": true
+},
+{
+"id": 21,
+"slug": null,
+"name_ar": "الأنبياء",
+"name_simple": "Al-Anbya",
+"name_fr": "Les prophètes",
+"name_en": "The Prophets",
+"place": "makkah",
+"order": 73,
+"verses": 112,
+"pages": [
+322,
+331
+],
+"bismillah": true
+},
+{
+"id": 22,
+"slug": null,
+"name_ar": "الحج",
+"name_simple": "Al-Hajj",
+"name_fr": "Le pèlerinage",
+"name_en": "The Pilgrimage",
+"place": "madinah",
+"order": 103,
+"verses": 78,
+"pages": [
+332,
+341
+],
+"bismillah": true
+},
+{
+"id": 23,
+"slug": null,
+"name_ar": "المؤمنون",
+"name_simple": "Al-Mu'minun",
+"name_fr": "Les croyants",
+"name_en": "The Believers",
+"place": "makkah",
+"order": 74,
+"verses": 118,
+"pages": [
+342,
+349
+],
+"bismillah": true
+},
+{
+"id": 24,
+"slug": null,
+"name_ar": "النور",
+"name_simple": "An-Nur",
+"name_fr": "La lumière",
+"name_en": "The Light",
+"place": "madinah",
+"order": 102,
+"verses": 64,
+"pages": [
+350,
+359
+],
+"bismillah": true
+},
+{
+"id": 25,
+"slug": null,
+"name_ar": "الفرقان",
+"name_simple": "Al-Furqan",
+"name_fr": "Le discernement",
+"name_en": "The Criterion",
+"place": "makkah",
+"order": 42,
+"verses": 77,
+"pages": [
+359,
+366
+],
+"bismillah": true
+},
+{
+"id": 26,
+"slug": null,
+"name_ar": "الشعراء",
+"name_simple": "Ash-Shu'ara",
+"name_fr": "Les poètes",
+"name_en": "The Poets",
+"place": "makkah",
+"order": 47,
+"verses": 227,
+"pages": [
+367,
+376
+],
+"bismillah": true
+},
+{
+"id": 27,
+"slug": null,
+"name_ar": "النمل",
+"name_simple": "An-Naml",
+"name_fr": "Les fourmis",
+"name_en": "The Ant",
+"place": "makkah",
+"order": 48,
+"verses": 93,
+"pages": [
+377,
+385
+],
+"bismillah": true
+},
+{
+"id": 28,
+"slug": null,
+"name_ar": "القصص",
+"name_simple": "Al-Qasas",
+"name_fr": "Le récit",
+"name_en": "The Stories",
+"place": "makkah",
+"order": 49,
+"verses": 88,
+"pages": [
+385,
+396
+],
+"bismillah": true
+},
+{
+"id": 29,
+"slug": null,
+"name_ar": "العنكبوت",
+"name_simple": "Al-'Ankabut",
+"name_fr": "L'araignée",
+"name_en": "The Spider",
+"place": "makkah",
+"order": 85,
+"verses": 69,
+"pages": [
+396,
+404
+],
+"bismillah": true
+},
+{
+"id": 30,
+"slug": null,
+"name_ar": "الروم",
+"name_simple": "Ar-Rum",
+"name_fr": "Les romains",
+"name_en": "The Romans",
+"place": "makkah",
+"order": 84,
+"verses": 60,
+"pages": [
+404,
+410
+],
+"bismillah": true
+},
+{
+"id": 31,
+"slug": null,
+"name_ar": "لقمان",
+"name_simple": "Luqman",
+"name_fr": "Louqman",
+"name_en": "Luqman",
+"place": "makkah",
+"order": 57,
+"verses": 34,
+"pages": [
+411,
+414
+],
+"bismillah": true
+},
+{
+"id": 32,
+"slug": null,
+"name_ar": "السجدة",
+"name_simple": "As-Sajdah",
+"name_fr": "La prosternation",
+"name_en": "The Prostration",
+"place": "makkah",
+"order": 75,
+"verses": 30,
+"pages": [
+415,
+417
+],
+"bismillah": true
+},
+{
+"id": 33,
+"slug": null,
+"name_ar": "الأحزاب",
+"name_simple": "Al-Ahzab",
+"name_fr": "Les coalisés",
+"name_en": "The Combined Forces",
+"place": "madinah",
+"order": 90,
+"verses": 73,
+"pages": [
+418,
+427
+],
+"bismillah": true
+},
+{
+"id": 34,
+"slug": null,
+"name_ar": "سبإ",
+"name_simple": "Saba",
+"name_fr": "Saba'",
+"name_en": "Sheba",
+"place": "makkah",
+"order": 58,
+"verses": 54,
+"pages": [
+428,
+434
+],
+"bismillah": true
+},
+{
+"id": 35,
+"slug": null,
+"name_ar": "فاطر",
+"name_simple": "Fatir",
+"name_fr": "Le Créateur",
+"name_en": "Originator",
+"place": "makkah",
+"order": 43,
+"verses": 45,
+"pages": [
+434,
+440
+],
+"bismillah": true
+},
+{
+"id": 36,
+"slug": null,
+"name_ar": "يس",
+"name_simple": "Ya-Sin",
+"name_fr": "Ya-Sin",
+"name_en": "Ya Sin",
+"place": "makkah",
+"order": 41,
+"verses": 83,
+"pages": [
+440,
+445
+],
+"bismillah": true
+},
+{
+"id": 37,
+"slug": null,
+"name_ar": "الصافات",
+"name_simple": "As-Saffat",
+"name_fr": "Les rangés",
+"name_en": "Those who set the Ranks",
+"place": "makkah",
+"order": 56,
+"verses": 182,
+"pages": [
+446,
+452
+],
+"bismillah": true
+},
+{
+"id": 38,
+"slug": null,
+"name_ar": "ص",
+"name_simple": "Sad",
+"name_fr": "Sad",
+"name_en": "The Letter \"Saad\"",
+"place": "makkah",
+"order": 38,
+"verses": 88,
+"pages": [
+453,
+458
+],
+"bismillah": true
+},
+{
+"id": 39,
+"slug": null,
+"name_ar": "الزمر",
+"name_simple": "Az-Zumar",
+"name_fr": "Les groupes",
+"name_en": "The Troops",
+"place": "makkah",
+"order": 59,
+"verses": 75,
+"pages": [
+458,
+467
+],
+"bismillah": true
+},
+{
+"id": 40,
+"slug": null,
+"name_ar": "غافر",
+"name_simple": "Ghafir",
+"name_fr": "Le Pardonneur",
+"name_en": "The Forgiver",
+"place": "makkah",
+"order": 60,
+"verses": 85,
+"pages": [
+467,
+476
+],
+"bismillah": true
+},
+{
+"id": 41,
+"slug": null,
+"name_ar": "فصلت",
+"name_simple": "Fussilat",
+"name_fr": "Les versets explicites",
+"name_en": "Explained in Detail",
+"place": "makkah",
+"order": 61,
+"verses": 54,
+"pages": [
+477,
+482
+],
+"bismillah": true
+},
+{
+"id": 42,
+"slug": null,
+"name_ar": "الشورى",
+"name_simple": "Ash-Shuraa",
+"name_fr": "La concertation",
+"name_en": "The Consultation",
+"place": "makkah",
+"order": 62,
+"verses": 53,
+"pages": [
+483,
+489
+],
+"bismillah": true
+},
+{
+"id": 43,
+"slug": null,
+"name_ar": "الزخرف",
+"name_simple": "Az-Zukhruf",
+"name_fr": "L'ornement",
+"name_en": "The Ornaments of Gold",
+"place": "makkah",
+"order": 63,
+"verses": 89,
+"pages": [
+489,
+495
+],
+"bismillah": true
+},
+{
+"id": 44,
+"slug": null,
+"name_ar": "الدخان",
+"name_simple": "Ad-Dukhan",
+"name_fr": "La fumée",
+"name_en": "The Smoke",
+"place": "makkah",
+"order": 64,
+"verses": 59,
+"pages": [
+496,
+498
+],
+"bismillah": true
+},
+{
+"id": 45,
+"slug": null,
+"name_ar": "الجاثية",
+"name_simple": "Al-Jathiyah",
+"name_fr": "L'agenouillée",
+"name_en": "The Crouching",
+"place": "makkah",
+"order": 65,
+"verses": 37,
+"pages": [
+499,
+502
+],
+"bismillah": true
+},
+{
+"id": 46,
+"slug": null,
+"name_ar": "الأحقاف",
+"name_simple": "Al-Ahqaf",
+"name_fr": "Al-Ahqaf",
+"name_en": "The Wind-Curved Sandhills",
+"place": "makkah",
+"order": 66,
+"verses": 35,
+"pages": [
+502,
+506
+],
+"bismillah": true
+},
+{
+"id": 47,
+"slug": null,
+"name_ar": "محمد",
+"name_simple": "Muhammad",
+"name_fr": "Mouhammad",
+"name_en": "Muhammad",
+"place": "madinah",
+"order": 95,
+"verses": 38,
+"pages": [
+507,
+510
+],
+"bismillah": true
+},
+{
+"id": 48,
+"slug": null,
+"name_ar": "الفتح",
+"name_simple": "Al-Fath",
+"name_fr": "La victoire éclatante",
+"name_en": "The Victory",
+"place": "madinah",
+"order": 111,
+"verses": 29,
+"pages": [
+511,
+515
+],
+"bismillah": true
+},
+{
+"id": 49,
+"slug": null,
+"name_ar": "الحجرات",
+"name_simple": "Al-Hujurat",
+"name_fr": "Les appartements",
+"name_en": "The Rooms",
+"place": "madinah",
+"order": 106,
+"verses": 18,
+"pages": [
+515,
+517
+],
+"bismillah": true
+},
+{
+"id": 50,
+"slug": null,
+"name_ar": "ق",
+"name_simple": "Qaf",
+"name_fr": "Qaf",
+"name_en": "The Letter \"Qaf\"",
+"place": "makkah",
+"order": 34,
+"verses": 45,
+"pages": [
+518,
+520
+],
+"bismillah": true
+},
+{
+"id": 51,
+"slug": null,
+"name_ar": "الذاريات",
+"name_simple": "Adh-Dhariyat",
+"name_fr": "Qui éparpillent",
+"name_en": "The Winnowing Winds",
+"place": "makkah",
+"order": 67,
+"verses": 60,
+"pages": [
+520,
+523
+],
+"bismillah": true
+},
+{
+"id": 52,
+"slug": null,
+"name_ar": "الطور",
+"name_simple": "At-Tur",
+"name_fr": "Le mont At-Tour",
+"name_en": "The Mount",
+"place": "makkah",
+"order": 76,
+"verses": 49,
+"pages": [
+523,
+525
+],
+"bismillah": true
+},
+{
+"id": 53,
+"slug": null,
+"name_ar": "النجم",
+"name_simple": "An-Najm",
+"name_fr": "L'étoile",
+"name_en": "The Star",
+"place": "makkah",
+"order": 23,
+"verses": 62,
+"pages": [
+526,
+528
+],
+"bismillah": true
+},
+{
+"id": 54,
+"slug": null,
+"name_ar": "القمر",
+"name_simple": "Al-Qamar",
+"name_fr": "La lune",
+"name_en": "The Moon",
+"place": "makkah",
+"order": 37,
+"verses": 55,
+"pages": [
+528,
+531
+],
+"bismillah": true
+},
+{
+"id": 55,
+"slug": null,
+"name_ar": "الرحمن",
+"name_simple": "Ar-Rahman",
+"name_fr": "Le Tout Miséricordieux",
+"name_en": "The Beneficent",
+"place": "madinah",
+"order": 97,
+"verses": 78,
+"pages": [
+531,
+534
+],
+"bismillah": true
+},
+{
+"id": 56,
+"slug": null,
+"name_ar": "الواقعة",
+"name_simple": "Al-Waqi'ah",
+"name_fr": "L'inévitable",
+"name_en": "The Inevitable",
+"place": "makkah",
+"order": 46,
+"verses": 96,
+"pages": [
+534,
+537
+],
+"bismillah": true
+},
+{
+"id": 57,
+"slug": null,
+"name_ar": "الحديد",
+"name_simple": "Al-Hadid",
+"name_fr": "Le fer",
+"name_en": "The Iron",
+"place": "madinah",
+"order": 94,
+"verses": 29,
+"pages": [
+537,
+541
+],
+"bismillah": true
+},
+{
+"id": 58,
+"slug": null,
+"name_ar": "المجادلة",
+"name_simple": "Al-Mujadila",
+"name_fr": "La discussion",
+"name_en": "The Pleading Woman",
+"place": "madinah",
+"order": 105,
+"verses": 22,
+"pages": [
+542,
+545
+],
+"bismillah": true
+},
+{
+"id": 59,
+"slug": null,
+"name_ar": "الحشر",
+"name_simple": "Al-Hashr",
+"name_fr": "L'exode",
+"name_en": "The Exile",
+"place": "madinah",
+"order": 101,
+"verses": 24,
+"pages": [
+545,
+548
+],
+"bismillah": true
+},
+{
+"id": 60,
+"slug": null,
+"name_ar": "الممتحنة",
+"name_simple": "Al-Mumtahanah",
+"name_fr": "L'éprouvée",
+"name_en": "She that is to be examined",
+"place": "madinah",
+"order": 91,
+"verses": 13,
+"pages": [
+549,
+551
+],
+"bismillah": true
+},
+{
+"id": 61,
+"slug": null,
+"name_ar": "الصف",
+"name_simple": "As-Saf",
+"name_fr": "Le rang",
+"name_en": "The Ranks",
+"place": "madinah",
+"order": 109,
+"verses": 14,
+"pages": [
+551,
+552
+],
+"bismillah": true
+},
+{
+"id": 62,
+"slug": null,
+"name_ar": "الجمعة",
+"name_simple": "Al-Jumu'ah",
+"name_fr": "Le vendredi",
+"name_en": "The Congregation, Friday",
+"place": "madinah",
+"order": 110,
+"verses": 11,
+"pages": [
+553,
+554
+],
+"bismillah": true
+},
+{
+"id": 63,
+"slug": null,
+"name_ar": "المنافقون",
+"name_simple": "Al-Munafiqun",
+"name_fr": "Les hypocrites",
+"name_en": "The Hypocrites",
+"place": "madinah",
+"order": 104,
+"verses": 11,
+"pages": [
+554,
+555
+],
+"bismillah": true
+},
+{
+"id": 64,
+"slug": null,
+"name_ar": "التغابن",
+"name_simple": "At-Taghabun",
+"name_fr": "La grande perte",
+"name_en": "The Mutual Disillusion",
+"place": "madinah",
+"order": 108,
+"verses": 18,
+"pages": [
+556,
+557
+],
+"bismillah": true
+},
+{
+"id": 65,
+"slug": null,
+"name_ar": "الطلاق",
+"name_simple": "At-Talaq",
+"name_fr": "Le divorce",
+"name_en": "The Divorce",
+"place": "madinah",
+"order": 99,
+"verses": 12,
+"pages": [
+558,
+559
+],
+"bismillah": true
+},
+{
+"id": 66,
+"slug": null,
+"name_ar": "التحريم",
+"name_simple": "At-Tahrim",
+"name_fr": "L'interdiction",
+"name_en": "The Prohibition",
+"place": "madinah",
+"order": 107,
+"verses": 12,
+"pages": [
+560,
+561
+],
+"bismillah": true
+},
+{
+"id": 67,
+"slug": null,
+"name_ar": "الملك",
+"name_simple": "Al-Mulk",
+"name_fr": "La royauté",
+"name_en": "The Sovereignty",
+"place": "makkah",
+"order": 77,
+"verses": 30,
+"pages": [
+562,
+564
+],
+"bismillah": true
+},
+{
+"id": 68,
+"slug": null,
+"name_ar": "القلم",
+"name_simple": "Al-Qalam",
+"name_fr": "La plume",
+"name_en": "The Pen",
+"place": "makkah",
+"order": 2,
+"verses": 52,
+"pages": [
+564,
+566
+],
+"bismillah": true
+},
+{
+"id": 69,
+"slug": null,
+"name_ar": "الحاقة",
+"name_simple": "Al-Haqqah",
+"name_fr": "L'inéluctable",
+"name_en": "The Reality",
+"place": "makkah",
+"order": 78,
+"verses": 52,
+"pages": [
+566,
+568
+],
+"bismillah": true
+},
+{
+"id": 70,
+"slug": null,
+"name_ar": "المعارج",
+"name_simple": "Al-Ma'arij",
+"name_fr": "Les voies d'ascension",
+"name_en": "The Ascending Stairways",
+"place": "makkah",
+"order": 79,
+"verses": 44,
+"pages": [
+568,
+570
+],
+"bismillah": true
+},
+{
+"id": 71,
+"slug": null,
+"name_ar": "نوح",
+"name_simple": "Nuh",
+"name_fr": "Noé",
+"name_en": "Noah",
+"place": "makkah",
+"order": 71,
+"verses": 28,
+"pages": [
+570,
+571
+],
+"bismillah": true
+},
+{
+"id": 72,
+"slug": null,
+"name_ar": "الجن",
+"name_simple": "Al-Jinn",
+"name_fr": "Les djinns",
+"name_en": "The Jinn",
+"place": "makkah",
+"order": 40,
+"verses": 28,
+"pages": [
+572,
+573
+],
+"bismillah": true
+},
+{
+"id": 73,
+"slug": null,
+"name_ar": "المزمل",
+"name_simple": "Al-Muzzammil",
+"name_fr": "L'enveloppé",
+"name_en": "The Enshrouded One",
+"place": "makkah",
+"order": 3,
+"verses": 20,
+"pages": [
+574,
+575
+],
+"bismillah": true
+},
+{
+"id": 74,
+"slug": null,
+"name_ar": "المدثر",
+"name_simple": "Al-Muddaththir",
+"name_fr": "Celui qui se couvre",
+"name_en": "The Cloaked One",
+"place": "makkah",
+"order": 4,
+"verses": 56,
+"pages": [
+575,
+577
+],
+"bismillah": true
+},
+{
+"id": 75,
+"slug": null,
+"name_ar": "القيامة",
+"name_simple": "Al-Qiyamah",
+"name_fr": "La résurrection",
+"name_en": "The Resurrection",
+"place": "makkah",
+"order": 31,
+"verses": 40,
+"pages": [
+577,
+578
+],
+"bismillah": true
+},
+{
+"id": 76,
+"slug": null,
+"name_ar": "الانسان",
+"name_simple": "Al-Insan",
+"name_fr": "L'homme",
+"name_en": "The Man",
+"place": "madinah",
+"order": 98,
+"verses": 31,
+"pages": [
+578,
+580
+],
+"bismillah": true
+},
+{
+"id": 77,
+"slug": null,
+"name_ar": "المرسلات",
+"name_simple": "Al-Mursalat",
+"name_fr": "Les envoyés",
+"name_en": "The Emissaries",
+"place": "makkah",
+"order": 33,
+"verses": 50,
+"pages": [
+580,
+581
+],
+"bismillah": true
+},
+{
+"id": 78,
+"slug": null,
+"name_ar": "النبإ",
+"name_simple": "An-Naba",
+"name_fr": "La nouvelle",
+"name_en": "The Tidings",
+"place": "makkah",
+"order": 80,
+"verses": 40,
+"pages": [
+582,
+583
+],
+"bismillah": true
+},
+{
+"id": 79,
+"slug": null,
+"name_ar": "النازعات",
+"name_simple": "An-Nazi'at",
+"name_fr": "Ceux qui arrachent",
+"name_en": "Those who drag forth",
+"place": "makkah",
+"order": 81,
+"verses": 46,
+"pages": [
+583,
+584
+],
+"bismillah": true
+},
+{
+"id": 80,
+"slug": null,
+"name_ar": "عبس",
+"name_simple": "'Abasa",
+"name_fr": "Il s'est renfrogné",
+"name_en": "He Frowned",
+"place": "makkah",
+"order": 24,
+"verses": 42,
+"pages": [
+585,
+585
+],
+"bismillah": true
+},
+{
+"id": 81,
+"slug": null,
+"name_ar": "التكوير",
+"name_simple": "At-Takwir",
+"name_fr": "L'obscurcissement",
+"name_en": "The Overthrowing",
+"place": "makkah",
+"order": 7,
+"verses": 29,
+"pages": [
+586,
+586
+],
+"bismillah": true
+},
+{
+"id": 82,
+"slug": null,
+"name_ar": "الإنفطار",
+"name_simple": "Al-Infitar",
+"name_fr": "La rupture",
+"name_en": "The Cleaving",
+"place": "makkah",
+"order": 82,
+"verses": 19,
+"pages": [
+587,
+587
+],
+"bismillah": true
+},
+{
+"id": 83,
+"slug": null,
+"name_ar": "المطففين",
+"name_simple": "Al-Mutaffifin",
+"name_fr": "Les fraudeurs",
+"name_en": "The Defrauding",
+"place": "makkah",
+"order": 86,
+"verses": 36,
+"pages": [
+587,
+589
+],
+"bismillah": true
+},
+{
+"id": 84,
+"slug": null,
+"name_ar": "الإنشقاق",
+"name_simple": "Al-Inshiqaq",
+"name_fr": "La déchirure",
+"name_en": "The Sundering",
+"place": "makkah",
+"order": 83,
+"verses": 25,
+"pages": [
+589,
+589
+],
+"bismillah": true
+},
+{
+"id": 85,
+"slug": null,
+"name_ar": "البروج",
+"name_simple": "Al-Buruj",
+"name_fr": "Les constellations",
+"name_en": "The Mansions of the Stars",
+"place": "makkah",
+"order": 27,
+"verses": 22,
+"pages": [
+590,
+590
+],
+"bismillah": true
+},
+{
+"id": 86,
+"slug": null,
+"name_ar": "الطارق",
+"name_simple": "At-Tariq",
+"name_fr": "L'astre nocturne",
+"name_en": "The Nightcommer",
+"place": "makkah",
+"order": 36,
+"verses": 17,
+"pages": [
+591,
+591
+],
+"bismillah": true
+},
+{
+"id": 87,
+"slug": null,
+"name_ar": "الأعلى",
+"name_simple": "Al-A'la",
+"name_fr": "Le Très-Haut",
+"name_en": "The Most High",
+"place": "makkah",
+"order": 8,
+"verses": 19,
+"pages": [
+591,
+592
+],
+"bismillah": true
+},
+{
+"id": 88,
+"slug": null,
+"name_ar": "الغاشية",
+"name_simple": "Al-Ghashiyah",
+"name_fr": "L'enveloppante",
+"name_en": "The Overwhelming",
+"place": "makkah",
+"order": 68,
+"verses": 26,
+"pages": [
+592,
+592
+],
+"bismillah": true
+},
+{
+"id": 89,
+"slug": null,
+"name_ar": "الفجر",
+"name_simple": "Al-Fajr",
+"name_fr": "L'aube",
+"name_en": "The Dawn",
+"place": "makkah",
+"order": 10,
+"verses": 30,
+"pages": [
+593,
+594
+],
+"bismillah": true
+},
+{
+"id": 90,
+"slug": null,
+"name_ar": "البلد",
+"name_simple": "Al-Balad",
+"name_fr": "La cité",
+"name_en": "The City",
+"place": "makkah",
+"order": 35,
+"verses": 20,
+"pages": [
+594,
+594
+],
+"bismillah": true
+},
+{
+"id": 91,
+"slug": null,
+"name_ar": "الشمس",
+"name_simple": "Ash-Shams",
+"name_fr": "Le soleil",
+"name_en": "The Sun",
+"place": "makkah",
+"order": 26,
+"verses": 15,
+"pages": [
+595,
+595
+],
+"bismillah": true
+},
+{
+"id": 92,
+"slug": null,
+"name_ar": "الليل",
+"name_simple": "Al-Layl",
+"name_fr": "La nuit",
+"name_en": "The Night",
+"place": "makkah",
+"order": 9,
+"verses": 21,
+"pages": [
+595,
+596
+],
+"bismillah": true
+},
+{
+"id": 93,
+"slug": null,
+"name_ar": "الضحى",
+"name_simple": "Ad-Duhaa",
+"name_fr": "Le jour montant",
+"name_en": "The Morning Hours",
+"place": "makkah",
+"order": 11,
+"verses": 11,
+"pages": [
+596,
+596
+],
+"bismillah": true
+},
+{
+"id": 94,
+"slug": null,
+"name_ar": "الشرح",
+"name_simple": "Ash-Sharh",
+"name_fr": "L'ouverture",
+"name_en": "The Relief",
+"place": "makkah",
+"order": 12,
+"verses": 8,
+"pages": [
+596,
+596
+],
+"bismillah": true
+},
+{
+"id": 95,
+"slug": null,
+"name_ar": "التين",
+"name_simple": "At-Tin",
+"name_fr": "Les figues",
+"name_en": "The Fig",
+"place": "makkah",
+"order": 28,
+"verses": 8,
+"pages": [
+597,
+597
+],
+"bismillah": true
+},
+{
+"id": 96,
+"slug": null,
+"name_ar": "العلق",
+"name_simple": "Al-'Alaq",
+"name_fr": "L'adhérence",
+"name_en": "The Clot",
+"place": "makkah",
+"order": 1,
+"verses": 19,
+"pages": [
+597,
+597
+],
+"bismillah": true
+},
+{
+"id": 97,
+"slug": null,
+"name_ar": "القدر",
+"name_simple": "Al-Qadr",
+"name_fr": "La destinée",
+"name_en": "The Power",
+"place": "makkah",
+"order": 25,
+"verses": 5,
+"pages": [
+598,
+598
+],
+"bismillah": true
+},
+{
+"id": 98,
+"slug": null,
+"name_ar": "البينة",
+"name_simple": "Al-Bayyinah",
+"name_fr": "La preuve",
+"name_en": "The Clear Proof",
+"place": "madinah",
+"order": 100,
+"verses": 8,
+"pages": [
+598,
+599
+],
+"bismillah": true
+},
+{
+"id": 99,
+"slug": null,
+"name_ar": "الزلزلة",
+"name_simple": "Az-Zalzalah",
+"name_fr": "Le séisme",
+"name_en": "The Earthquake",
+"place": "madinah",
+"order": 93,
+"verses": 8,
+"pages": [
+599,
+599
+],
+"bismillah": true
+},
+{
+"id": 100,
+"slug": null,
+"name_ar": "العاديات",
+"name_simple": "Al-'Adiyat",
+"name_fr": "Les coursiers",
+"name_en": "The Courser",
+"place": "makkah",
+"order": 14,
+"verses": 11,
+"pages": [
+599,
+600
+],
+"bismillah": true
+},
+{
+"id": 101,
+"slug": null,
+"name_ar": "القارعة",
+"name_simple": "Al-Qari'ah",
+"name_fr": "Le fracas",
+"name_en": "The Calamity",
+"place": "makkah",
+"order": 30,
+"verses": 11,
+"pages": [
+600,
+600
+],
+"bismillah": true
+},
+{
+"id": 102,
+"slug": null,
+"name_ar": "التكاثر",
+"name_simple": "At-Takathur",
+"name_fr": "La course aux richesses",
+"name_en": "The Rivalry in world increase",
+"place": "makkah",
+"order": 16,
+"verses": 8,
+"pages": [
+600,
+600
+],
+"bismillah": true
+},
+{
+"id": 103,
+"slug": null,
+"name_ar": "العصر",
+"name_simple": "Al-'Asr",
+"name_fr": "Le temps",
+"name_en": "The Declining Day",
+"place": "makkah",
+"order": 13,
+"verses": 3,
+"pages": [
+601,
+601
+],
+"bismillah": true
+},
+{
+"id": 104,
+"slug": null,
+"name_ar": "الهمزة",
+"name_simple": "Al-Humazah",
+"name_fr": "Les calomniateurs",
+"name_en": "The Traducer",
+"place": "makkah",
+"order": 32,
+"verses": 9,
+"pages": [
+601,
+601
+],
+"bismillah": true
+},
+{
+"id": 105,
+"slug": null,
+"name_ar": "الفيل",
+"name_simple": "Al-Fil",
+"name_fr": "L'éléphant",
+"name_en": "The Elephant",
+"place": "makkah",
+"order": 19,
+"verses": 5,
+"pages": [
+601,
+601
+],
+"bismillah": true
+},
+{
+"id": 106,
+"slug": null,
+"name_ar": "قريش",
+"name_simple": "Quraysh",
+"name_fr": "Les Quraysh",
+"name_en": "Quraysh",
+"place": "makkah",
+"order": 29,
+"verses": 4,
+"pages": [
+602,
+602
+],
+"bismillah": true
+},
+{
+"id": 107,
+"slug": null,
+"name_ar": "الماعون",
+"name_simple": "Al-Ma'un",
+"name_fr": "L'entraide",
+"name_en": "The Small kindnesses",
+"place": "makkah",
+"order": 17,
+"verses": 7,
+"pages": [
+602,
+602
+],
+"bismillah": true
+},
+{
+"id": 108,
+"slug": null,
+"name_ar": "الكوثر",
+"name_simple": "Al-Kawthar",
+"name_fr": "L'abondance",
+"name_en": "The Abundance",
+"place": "makkah",
+"order": 15,
+"verses": 3,
+"pages": [
+602,
+602
+],
+"bismillah": true
+},
+{
+"id": 109,
+"slug": null,
+"name_ar": "الكافرون",
+"name_simple": "Al-Kafirun",
+"name_fr": "Les mécréants",
+"name_en": "The Disbelievers",
+"place": "makkah",
+"order": 18,
+"verses": 6,
+"pages": [
+603,
+603
+],
+"bismillah": true
+},
+{
+"id": 110,
+"slug": null,
+"name_ar": "النصر",
+"name_simple": "An-Nasr",
+"name_fr": "Le secours",
+"name_en": "The Divine Support",
+"place": "madinah",
+"order": 114,
+"verses": 3,
+"pages": [
+603,
+603
+],
+"bismillah": true
+},
+{
+"id": 111,
+"slug": null,
+"name_ar": "المسد",
+"name_simple": "Al-Masad",
+"name_fr": "Les fibres",
+"name_en": "The Palm Fiber",
+"place": "makkah",
+"order": 6,
+"verses": 5,
+"pages": [
+603,
+603
+],
+"bismillah": true
+},
+{
+"id": 112,
+"slug": null,
+"name_ar": "الإخلاص",
+"name_simple": "Al-Ikhlas",
+"name_fr": "La sincérité",
+"name_en": "The Sincerity",
+"place": "makkah",
+"order": 22,
+"verses": 4,
+"pages": [
+604,
+604
+],
+"bismillah": true
+},
+{
+"id": 113,
+"slug": null,
+"name_ar": "الفلق",
+"name_simple": "Al-Falaq",
+"name_fr": "L'aube naissante",
+"name_en": "The Daybreak",
+"place": "makkah",
+"order": 20,
+"verses": 5,
+"pages": [
+604,
+604
+],
+"bismillah": true
+},
+{
+"id": 114,
+"slug": null,
+"name_ar": "الناس",
+"name_simple": "An-Nas",
+"name_fr": "Les humains",
+"name_en": "Mankind",
+"place": "makkah",
+"order": 21,
+"verses": 6,
+"pages": [
+604,
+604
+],
+"bismillah": true
+}
+],
+"juz": {
+"1": {
+"1": "1-7",
+"2": "1-141"
+},
+"2": {
+"2": "142-252"
+},
+"3": {
+"2": "253-286",
+"3": "1-92"
+},
+"4": {
+"3": "93-200",
+"4": "1-23"
+},
+"5": {
+"4": "24-147"
+},
+"6": {
+"4": "148-176",
+"5": "1-81"
+},
+"7": {
+"5": "82-120",
+"6": "1-110"
+},
+"8": {
+"6": "111-165",
+"7": "1-87"
+},
+"9": {
+"7": "88-206",
+"8": "1-40"
+},
+"10": {
+"8": "41-75",
+"9": "1-92"
+},
+"11": {
+"9": "93-129",
+"10": "1-109",
+"11": "1-5"
+},
+"12": {
+"11": "6-123",
+"12": "1-52"
+},
+"13": {
+"12": "53-111",
+"13": "1-43",
+"14": "1-52"
+},
+"14": {
+"15": "1-99",
+"16": "1-128"
+},
+"15": {
+"17": "1-111",
+"18": "1-74"
+},
+"16": {
+"18": "75-110",
+"19": "1-98",
+"20": "1-135"
+},
+"17": {
+"21": "1-112",
+"22": "1-78"
+},
+"18": {
+"23": "1-118",
+"24": "1-64",
+"25": "1-20"
+},
+"19": {
+"25": "21-77",
+"26": "1-227",
+"27": "1-55"
+},
+"20": {
+"27": "56-93",
+"28": "1-88",
+"29": "1-45"
+},
+"21": {
+"29": "46-69",
+"30": "1-60",
+"31": "1-34",
+"32": "1-30",
+"33": "1-30"
+},
+"22": {
+"33": "31-73",
+"34": "1-54",
+"35": "1-45",
+"36": "1-27"
+},
+"23": {
+"36": "28-83",
+"37": "1-182",
+"38": "1-88",
+"39": "1-31"
+},
+"24": {
+"39": "32-75",
+"40": "1-85",
+"41": "1-46"
+},
+"25": {
+"41": "47-54",
+"42": "1-53",
+"43": "1-89",
+"44": "1-59",
+"45": "1-37"
+},
+"26": {
+"46": "1-35",
+"47": "1-38",
+"48": "1-29",
+"49": "1-18",
+"50": "1-45",
+"51": "1-30"
+},
+"27": {
+"51": "31-60",
+"52": "1-49",
+"53": "1-62",
+"54": "1-55",
+"55": "1-78",
+"56": "1-96",
+"57": "1-29"
+},
+"28": {
+"58": "1-22",
+"59": "1-24",
+"60": "1-13",
+"61": "1-14",
+"62": "1-11",
+"63": "1-11",
+"64": "1-18",
+"65": "1-12",
+"66": "1-12"
+},
+"29": {
+"67": "1-30",
+"68": "1-52",
+"69": "1-52",
+"70": "1-44",
+"71": "1-28",
+"72": "1-28",
+"73": "1-20",
+"74": "1-56",
+"75": "1-40",
+"76": "1-31",
+"77": "1-50"
+},
+"30": {
+"78": "1-40",
+"79": "1-46",
+"80": "1-42",
+"81": "1-29",
+"82": "1-19",
+"83": "1-36",
+"84": "1-25",
+"85": "1-22",
+"86": "1-17",
+"87": "1-19",
+"88": "1-26",
+"89": "1-30",
+"90": "1-20",
+"91": "1-15",
+"92": "1-21",
+"93": "1-11",
+"94": "1-8",
+"95": "1-8",
+"96": "1-19",
+"97": "1-5",
+"98": "1-8",
+"99": "1-8",
+"100": "1-11",
+"101": "1-11",
+"102": "1-8",
+"103": "1-3",
+"104": "1-9",
+"105": "1-5",
+"106": "1-4",
+"107": "1-7",
+"108": "1-3",
+"109": "1-6",
+"110": "1-3",
+"111": "1-5",
+"112": "1-4",
+"113": "1-5",
+"114": "1-6"
+}
+}
+}

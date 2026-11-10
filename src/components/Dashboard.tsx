@@ -510,6 +510,24 @@ export const Dashboard: React.FC<DashboardProps> = ({
           <span aria-hidden>🤲</span>
           <span>{language === 'ar' ? 'دعاء ختم القرآن الكريم' : language === 'en' ? 'Quran completion supplication' : 'Dua de fin de Khatma'}</span>
         </button>
+
+        {/* Adhkar, douas du Coran et sourates : pages de lecture (aussi indexées par Google) */}
+        <div className="mt-3 grid grid-cols-3 gap-2">
+          {[
+            { href: '/adhkar', icon: '📿', ar: 'الأذكار', fr: 'Adhkar', en: 'Adhkar' },
+            { href: '/douas', icon: '🤲', ar: 'أدعية القرآن', fr: 'Douas', en: 'Duas' },
+            { href: '/sourates', icon: '📖', ar: 'السور', fr: 'Sourates', en: 'Surahs' },
+          ].map((l) => (
+            <a
+              key={l.href}
+              href={l.href}
+              className="py-3 rounded-2xl border border-emerald-800/15 bg-white/80 dark:bg-stone-900/70 text-emerald-900 dark:text-emerald-200 font-bold text-[13px] flex flex-col items-center justify-center gap-1 active:scale-95 hover:shadow-md transition-shadow"
+            >
+              <span aria-hidden className="text-lg leading-none">{l.icon}</span>
+              <span>{language === 'ar' ? l.ar : language === 'en' ? l.en : l.fr}</span>
+            </a>
+          ))}
+        </div>
       </div>
     </div>
   );

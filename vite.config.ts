@@ -31,9 +31,9 @@ export default defineConfig(() => {
         workbox: {
           globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,mp4,woff,woff2}'],
           // Captures d'écran de l'éditeur (AI Studio) : inutiles hors ligne, 4,9 Mo de moins à installer.
-          globIgnores: ['**/assets/aistudio/**'],
-          // Pages statiques (confidentialité) : jamais remplacées par l'application.
-          navigateFallbackDenylist: [/^\/confidentialite/, /^\/privacy/],
+          globIgnores: ['**/assets/aistudio/**', 'sourate/**', 'adhkar/**', 'sourates.html', 'adhkar.html', 'douas.html', 'confidentialite.html'],
+          // Pages statiques (confidentialité, sourates, adhkar, douas) : jamais remplacées par l'application.
+          navigateFallbackDenylist: [/^\/confidentialite/, /^\/privacy/, /^\/sourates?(\/|$)/, /^\/adhkar(\/|$)/, /^\/douas(\/|$)/],
           runtimeCaching: [
             {
               urlPattern: /^https:\/\/api\.quran\.com\/.*/i,
