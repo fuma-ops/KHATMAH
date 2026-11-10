@@ -1,5 +1,5 @@
-// Mesure d'audience via Google Tag Manager (GTM-TG95398C) : la balise GA4 est configurée dans GTM.
-// Les événements sont poussés dans dataLayer ; aucun contenu personnel (pas de texte, pas d'identité).
+// Mesure d'audience via Google Tag Manager (GTM-TG95398C), qui charge Google Analytics (G-FNTYPHJL2Q).
+// Aucun contenu personnel n'est envoyé (pas de texte, pas d'identité).
 type Payload = Record<string, string | number | boolean | undefined>;
 
 declare global {
@@ -8,9 +8,16 @@ declare global {
   }
 }
 
+// Envoyé au format gtag('event', …) : la balise Google (GA4 G-FNTYPHJL2Q) chargée par GTM le transmet
+// directement à Google Analytics, sans balise d'événement à configurer dans Tag Manager.
+function gtag(..._args: unknown[]): void {
+  // eslint-disable-next-line prefer-rest-params
+  (window.dataLayer = window.dataLayer || []).push(arguments);
+}
+
 export function track(event: string, params: Payload = {}): void {
   try {
-    (window.dataLayer = window.dataLayer || []).push({ event, ...params });
+    gtag('event', event, params);
   } catch {
     /* mesure indisponible : l'application continue normalement */
   }
