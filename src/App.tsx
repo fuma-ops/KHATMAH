@@ -745,7 +745,10 @@ export default function App() {
             </div>
             <div className="flex items-center gap-4 text-stone-400 font-mono">
               <span>30 Juz · 150 Pages</span>
-              <span>Coran 100% Intégral</span>
+              <span className="font-sans">{language === 'ar' ? 'القرآن كاملاً' : 'Complete Quran'}</span>
+              <a href="https://www.facebook.com/1461876633670165" target="_blank" rel="noopener" className="font-sans underline underline-offset-2 hover:text-emerald-800 dark:hover:text-emerald-300">
+                Facebook
+              </a>
               <a href="/privacy" className="font-sans underline underline-offset-2 hover:text-emerald-800 dark:hover:text-emerald-300">
                 {language === 'ar' ? 'الخصوصية' : language === 'en' ? 'Privacy' : 'Confidentialité'}
               </a>

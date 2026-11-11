@@ -151,7 +151,7 @@ def page(path, title, desc, body, crumbs, active='', jsonld=None, lang='ar', ext
 <main>
 <div class="crumbs">{crumb_html}</div>
 {body}
-<p class="note">ختمة — تطبيق مجاني لختم القرآن الكريم بالوتيرة التي تناسبك، دون حساب. Khatmah is a free app to read the whole Quran at your own pace, no account needed. <a href="/">Open the app</a> · <a href="/privacy">Privacy</a></p>
+<p class="note">ختمة — تطبيق مجاني لختم القرآن الكريم بالوتيرة التي تناسبك، دون حساب. Khatmah is a free app to read the whole Quran at your own pace, no account needed. <a href="/">Open the app</a> · <a href="https://www.facebook.com/1461876633670165" rel="noopener">Facebook</a> · <a href="/privacy">Privacy</a></p>
 </main>
 <div class="cta"><a href="/">📖 اقرأ في تطبيق ختمة · Read in Khatmah</a></div>
 {extra_js}
