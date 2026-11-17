@@ -7,7 +7,9 @@ import {
   Minimize2,
   Loader2,
   Eye,
-  Sliders
+  Sliders,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { 
@@ -824,7 +826,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
         }}
         onTouchStart={onSwipeStart}
         onTouchEnd={onSwipeEnd}
-        className={`flex-1 w-full max-w-4xl lg:max-w-5xl xl:max-w-6xl mx-auto px-3 sm:px-6 md:px-8 pt-3 sm:pt-4 pb-3 sm:pb-5 flex flex-col justify-start items-center relative ${
+        className={`flex-1 w-full max-w-4xl lg:max-w-5xl xl:max-w-6xl mx-auto px-3 sm:px-6 md:px-20 lg:px-24 pt-3 sm:pt-4 pb-3 sm:pb-5 flex flex-col justify-start items-center relative ${
           autoFitEnabled && !overflowing ? 'overflow-hidden' : 'overflow-y-auto scrollbar-none'
         }`}
       >
@@ -966,6 +968,31 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
           </div>
         )}
       </main>
+      {/* Ordinateur / tablette : boutons de page sur les côtés (le glissement du doigt reste sur mobile).
+          Comme au clavier : en arabe, la page suivante est à gauche ; en anglais, à droite. */}
+      {(() => {
+        const isFirst = juzNumber === 1 && pageIndex === 1;
+        const isLast = juzNumber === 30 && pageIndex === 5;
+        const nextLabel = language === 'ar' ? 'الصفحة التالية' : language === 'en' ? 'Next page' : 'Page suivante';
+        const prevLabel = language === 'ar' ? 'الصفحة السابقة' : language === 'en' ? 'Previous page' : 'Page précédente';
+        const btn = 'hidden md:flex fixed top-1/2 -translate-y-1/2 z-30 w-12 h-12 lg:w-14 lg:h-14 items-center justify-center rounded-full bg-white/90 dark:bg-stone-800/90 text-emerald-900 dark:text-emerald-200 border border-black/10 dark:border-white/15 shadow-md backdrop-blur transition-all duration-150 hover:scale-110 hover:shadow-lg hover:bg-emerald-50 dark:hover:bg-stone-700 active:scale-95 disabled:opacity-30 disabled:pointer-events-none';
+        const left = isRtl
+          ? { onClick: handleNext, label: nextLabel, disabled: isLast }
+          : { onClick: handlePrev, label: prevLabel, disabled: isFirst };
+        const right = isRtl
+          ? { onClick: handlePrev, label: prevLabel, disabled: isFirst }
+          : { onClick: handleNext, label: nextLabel, disabled: isLast };
+        return (
+          <>
+            <button type="button" onClick={left.onClick} disabled={left.disabled} aria-label={left.label} title={left.label} className={`${btn} left-3 lg:left-6`}>
+              <ChevronLeft className="w-6 h-6 lg:w-7 lg:h-7" />
+            </button>
+            <button type="button" onClick={right.onClick} disabled={right.disabled} aria-label={right.label} title={right.label} className={`${btn} right-3 lg:right-6`}>
+              <ChevronRight className="w-6 h-6 lg:w-7 lg:h-7" />
+            </button>
+          </>
+        );
+      })()}
       {toast && (
         <div className="fixed left-1/2 -translate-x-1/2 bottom-6 z-50 px-4 py-2 rounded-full bg-emerald-900 text-amber-100 text-xs font-semibold shadow-lg max-w-[90vw] text-center pointer-events-none">
           {toast}
