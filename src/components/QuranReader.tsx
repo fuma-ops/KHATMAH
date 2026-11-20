@@ -9,7 +9,8 @@ import {
   Eye,
   Sliders,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  ListOrdered
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { 
@@ -22,6 +23,7 @@ import { getSurahByNumber } from '../data/surahsData';
 import { toArabicNumerals } from '../utils/storage';
 import { AppLanguage, TRANSLATIONS } from '../utils/translations';
 import { ReadingSettings } from '../types/quran';
+import FahrasModal from './FahrasModal';
 
 export type VisualGuideMode = 'classic' | 'alternating' | 'colored' | 'focus';
 
@@ -48,6 +50,8 @@ interface QuranReaderProps {
   onSelectVerseForDetails: (verseKey: string, textArabic: string, surahNum: number, verseNum: number, audioUrl?: string) => void;
   /** Verset du signet de reprise sur cette page (s'il y en a un). */
   resumeVerseKey?: string;
+  completedPages?: string[];
+  onJumpTo?: (juz: number, page: number, verseKey?: string) => void;
   /** Fenêtre tafsir/détails du verset ouverte (pour retrouver le verset au retour). */
   detailsOpen?: boolean;
 }
@@ -70,10 +74,13 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
   onUpdateTheme,
   onSelectVerseForDetails,
   resumeVerseKey,
+  completedPages,
+  onJumpTo,
   detailsOpen = false
 }) => {
   const t = TRANSLATIONS[language];
   const isRtl = language === 'ar';
+  const [fahrasOpen, setFahrasOpen] = useState<boolean>(false);
   const overallPage = (juzNumber - 1) * 5 + pageIndex;
   const progressPercent = Math.round((overallPage / 150) * 100);
 
@@ -559,6 +566,15 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
 
   return (
     <div className={`h-[100dvh] max-h-[100dvh] w-full overflow-hidden flex flex-col justify-start ${bgClass} transition-colors select-text relative`}>
+      <FahrasModal
+        isOpen={fahrasOpen}
+        language={language}
+        currentJuz={juzNumber}
+        currentPage={pageIndex}
+        completedPages={completedPages}
+        onClose={() => setFahrasOpen(false)}
+        onJump={(juz, page, verseKey) => (onJumpTo ? onJumpTo(juz, page, verseKey) : onNavigatePage(juz, page))}
+      />
       {/* 1. ONLY TOP BAR: Contains all navigation, arrows, complete status & controls */}
       <header className="shrink-0 h-12 w-full backdrop-blur-md bg-opacity-95 border-b border-black/5 dark:border-white/10 px-2 sm:px-4 flex items-center justify-between text-xs font-semibold z-20">
         {/* Left Side: Back button */}
@@ -570,6 +586,15 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
           >
             <ArrowLeft className={`w-4 h-4 ${isRtl ? 'rotate-180' : ''}`} />
             <span className="hidden sm:inline font-bold tracking-wide">KHATMAH</span>
+          </button>
+          <button
+            onClick={() => setFahrasOpen(true)}
+            className="p-1.5 rounded-lg text-emerald-900 dark:text-emerald-300 hover:bg-black/5 dark:hover:bg-white/10 active:scale-95 transition flex items-center gap-1"
+            title={language === 'ar' ? 'الفهرس' : 'Index'}
+            aria-label={language === 'ar' ? 'الفهرس' : 'Index'}
+          >
+            <ListOrdered className="w-4 h-4" />
+            <span className="hidden sm:inline font-bold">{language === 'ar' ? 'الفهرس' : 'Index'}</span>
           </button>
         </div>
 

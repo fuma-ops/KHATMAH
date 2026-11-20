@@ -353,7 +353,15 @@ export default function App() {
     });
   };
 
+  // Cible choisie dans le fahras : on ouvre la page condensée et on amène le verset à l'écran.
+  const [jumpTarget, setJumpTarget] = useState<{ juz: number; page: number; verseKey: string } | null>(null);
+  const handleJumpTo = (juz: number, page: number, verseKey?: string) => {
+    setJumpTarget(verseKey ? { juz, page, verseKey } : null);
+    setKhatma(prev => ({ ...prev, currentPosition: { juz, page } }));
+  };
+
   const handleNavigatePage = (juz: number, page: number) => {
+    setJumpTarget(null);
     setKhatma(prev => ({
       ...prev,
       currentPosition: { juz, page }
@@ -496,8 +504,12 @@ export default function App() {
           onToggleBookmark={handleToggleBookmark}
           onUpdateFontSize={(fontSize) => setSettings(s => ({ ...s, fontSize }))}
           onUpdateTheme={(theme) => setSettings(s => ({ ...s, theme }))}
+          completedPages={khatma.completedPages}
+          onJumpTo={handleJumpTo}
           resumeVerseKey={
-            khatma.resumeMarker && khatma.resumeMarker.juz === khatma.currentPosition.juz && khatma.resumeMarker.page === khatma.currentPosition.page
+            jumpTarget && jumpTarget.juz === khatma.currentPosition.juz && jumpTarget.page === khatma.currentPosition.page
+              ? jumpTarget.verseKey
+              : khatma.resumeMarker && khatma.resumeMarker.juz === khatma.currentPosition.juz && khatma.resumeMarker.page === khatma.currentPosition.page
               ? khatma.resumeMarker.verseKey
               : undefined
           }
